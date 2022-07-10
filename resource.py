@@ -4,7 +4,6 @@ from flask_apispec import doc,use_kwargs,MethodResource
 from model import GetPunchRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest
 import sta
 from flask import request, redirect, url_for
-import csv
 
 def db_init():
     db = pymysql.connect(
