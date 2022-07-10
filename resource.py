@@ -1,7 +1,7 @@
 import pymysql
 import json
 from flask_apispec import doc,use_kwargs,MethodResource
-from model import GetPunchRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest
+from model import GetPunchRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest
 import sta
 from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -77,7 +77,7 @@ class Punch(MethodResource):
 
         try:
             cursor.execute(sql)
-            data = json.dumps(cursor.fetchall())
+            data = cursor.fetchall()
             db.commit()
             cursor.close()
             db.close()
@@ -140,7 +140,7 @@ class Count(MethodResource):
 
         try:
             cursor.execute(sql)
-            data = json.dumps(cursor.fetchall())
+            data = cursor.fetchall()
             db.commit()
             cursor.close()
             db.close()
@@ -179,7 +179,7 @@ class Curriculum(MethodResource):
 
         try:
             cursor.execute(sql)
-            data = json.dumps(cursor.fetchall(),ensure_ascii=False)
+            data = cursor.fetchall()
             db.commit()
             cursor.close()
             db.close()
@@ -208,13 +208,17 @@ class Curriculum(MethodResource):
         truncate = f"TRUNCATE TABLE curriculum.{group};"
         val = []
         
-        ts=file.readline()
+        try:
+            ts=file.readline().decode('utf-8')
+        except:
+            return sta.failure('請使用utf-8編碼')
+
         while ts is not None and ts != '':
             ts=file.readline().decode("utf-8")
             if ts is None or ts == '':
                 break
             if len(ts.split(',')) != 6:
-                return sta.failure('課表有誤')
+                return sta.failure('欄位有誤(6欄)')
 
             tsn=f"('{ts.split(',')[0]}','{ts.split(',')[1]}',"+",".join(ts.split(',')[2:])+")"
             val.append(tsn)
@@ -240,5 +244,116 @@ class Curriculum(MethodResource):
             cursor.close()
             db.close()
             return sta.failure('課表有誤')
+
+
+class Leave(MethodResource):
+    @doc(description="Leave", tags=['Leave'])
+    @use_kwargs(GetLeaveRequest,location="query")
+    def get(self,**kwargs):        
+        par={
+            'group': kwargs.get('group'),
+            'name': kwargs.get('name'),
+            'cur' : kwargs.get('cur'),
+            'startdate': kwargs.get('startdate'),
+            'stopdate': kwargs.get('stopdate'),
+            'leavetype': kwargs.get('leavetype')
+        }
+
+        query = ''
+        if par['name'] is not None:
+            query += f"AND LOWER(name) = LOWER('{par['name']}')"
+        if par['cur'] == 'today':
+            query += "AND date = curdate()"
+        if par['cur'] == 'month':
+            query += "AND date LIKE CONCAT(SUBSTRING(curdate(),1,7),'%')"
+        if par['startdate'] is not None:
+            query += f"AND date >= '{par['startdate']}'"
+        if par['stopdate'] is not None:
+            query += f"AND date <= '{par['stopdate']}'"
+        if par['leavetype'] is not None:
+            query += f"AND type LIKE '%{par['leavetype']}%'"
+
+        if query != '':
+            query = 'WHERE' + query[3:]
+        sql = f"SELECT * FROM leavelist.`{par['group']}` {query} ORDER BY date DESC;"
+        
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(sql)
+            data = cursor.fetchall()
+            db.commit()
+            cursor.close()
+            db.close()
+            return sta.success(data)
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
+
+
+    @doc(description="PostLeave", tags=['Leave'])
+    @use_kwargs(PostCurriculumRequest,location="form")
+    def post(self,**kwargs):
+        group = request.values.get('group')
+        file = request.files.get('file')
+        if file is None or secure_filename(file.filename) == '':
+            return sta.failure('未上傳請假檔案')
+
+        file_ext = os.path.splitext(secure_filename(file.filename))[1]
+        if file_ext not in ['.csv']:
+            return sta.failure('請上傳csv檔')
+
+        create = f"""
+            CREATE TABLE IF NOT EXISTS leavelist.{group} (name varchar(20),date date,time varchar(40),type varchar(20),reason varchar(50));
+        """
+        truncate = f"TRUNCATE TABLE leavelist.{group};"
+        val = []
+        
+        try:
+            ts=file.readline().decode('utf-8')
+        except:
+            return sta.failure('請使用utf-8編碼')
+
+        while ts is not None and ts != '':
+            ts=file.readline().decode('utf-8')
+            if ts is None or ts == '':
+                break
+            if len(ts.split(',')) != 5:
+                return sta.failure('欄位有誤(5欄)')
+
+            tl = ts.split(',')
+            if tl[4] == "\r\n":
+                tl[4] = 'no reason'
+            for i in range(len(tl)):
+                tl[i] = f"'{tl[i]}'"
+            tl = f"({','.join(tl)})"
+
+            val.append(tl)
+        file.close()
+
+        val = ",".join(val)
+        insert = f"INSERT INTO leavelist.{group} VALUES {val};"
+        
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(create)
+            cursor.execute(truncate)
+            cursor.execute(insert)
+            db.commit()
+            cursor.close()
+            db.close()
+            return redirect(url_for('leave',group=group))
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('檔案內容有誤')
 
 
