@@ -218,47 +218,4 @@ class Curriculum(MethodResource):
         return redirect(url_for('curriculum',group=group))
 
 
-# class Curriculum(MethodResource):
-#     @doc(description="Curriculum", tags=['Curriculum'])
-#     @use_kwargs(GetCurriculumRequest,location="query")
-#     def get(self,**kwargs):
-#         db, cursor = db_init()
-
-#         par={
-#             'group': kwargs.get('group'),
-#             'month': kwargs.get('month')
-#         }
-
-#         query = ""
-#         if par['month'] is not None:
-#             query = f"WHERE date LIKE '{par['month']}%'"
-        
-
-#         sql = f"""
-#             SELECT date,part,course,shouldin,shouldout,TIMESTAMPDIFF(HOUR,shouldin,shouldout) hours,Name,intime,outtime,CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END AS 'present' 
-#             FROM 
-#             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',course,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s') shouldin,str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s') shouldout 
-#             FROM curriculum.`fn101`) AS curr join personal_data.`fn101` AS person
-#             left join 
-#             (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
-#             FROM 
-#             (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, min(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) intime,ipaddress inip
-#             FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
-#             (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, max(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) outtime,ipaddress outip 
-#             FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-#             AS pun ON date=pun.date2 AND Name=pun.name2;
-#         """
-
-#         try:
-#             cursor.execute(sql)
-#             data = json.dumps(cursor.fetchall(),ensure_ascii=False)
-#             db.commit()
-#             cursor.close()
-#             db.close()
-
-#             return sta.success(data)
-
-#         except:
-#             return sta.failure()
-
 
