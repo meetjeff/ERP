@@ -19,9 +19,7 @@ def db_init():
 class Punch(MethodResource):
     @doc(description="Punch", tags=['Punch'])
     @use_kwargs(GetPunchRequest,location="query")
-    def get(self,**kwargs):
-        db, cursor = db_init()
-
+    def get(self,**kwargs):        
         par={
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
@@ -72,15 +70,20 @@ class Punch(MethodResource):
         """
 
         try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
             cursor.execute(sql)
             data = json.dumps(cursor.fetchall())
             db.commit()
             cursor.close()
             db.close()
-
             return sta.success(data)
-
         except:
+            cursor.close()
+            db.close()
             return sta.failure('參數有誤')
 
 
@@ -88,8 +91,6 @@ class Count(MethodResource):
     @doc(description="Count", tags=['Count'])
     @use_kwargs(GetCountRequest,location="query")
     def get(self,**kwargs):
-        db, cursor = db_init()
-
         par={
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
@@ -132,15 +133,20 @@ class Count(MethodResource):
         """
 
         try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
             cursor.execute(sql)
             data = json.dumps(cursor.fetchall())
             db.commit()
             cursor.close()
             db.close()
-
             return sta.success(data)
-
         except:
+            cursor.close()
+            db.close()
             return sta.failure('參數有誤')
 
 
@@ -148,8 +154,6 @@ class Curriculum(MethodResource):
     @doc(description="GetCurriculum", tags=['Curriculum'])
     @use_kwargs(GetCurriculumRequest,location="query")
     def get(self,**kwargs):
-        db, cursor = db_init()
-
         par={
             'group': kwargs.get('group'),
             'month': kwargs.get('month')
@@ -159,7 +163,6 @@ class Curriculum(MethodResource):
         if par['month'] is not None:
             query = f"WHERE date LIKE '{par['month']}%'"
         
-
         sql = f"""
             SELECT date,part,course,TIMESTAMPDIFF(HOUR,shouldin,shouldout) hours,'123' classroom 
             FROM 
@@ -169,15 +172,20 @@ class Curriculum(MethodResource):
         """
 
         try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
             cursor.execute(sql)
             data = json.dumps(cursor.fetchall(),ensure_ascii=False)
             db.commit()
             cursor.close()
             db.close()
-
             return sta.success(data)
-
         except:
+            cursor.close()
+            db.close()
             return sta.failure('參數有誤')
             
 
@@ -200,6 +208,9 @@ class Curriculum(MethodResource):
             ts=file.readline().decode("utf-8")
             if ts is None or ts == '':
                 break
+            if len(ts.split(',')) != 6:
+                return sta.failure('課表有誤')
+
             tsn=f"('{ts.split(',')[0]}','{ts.split(',')[1]}',"+",".join(ts.split(',')[2:])+")"
             val.append(tsn)
         file.close()
@@ -207,15 +218,22 @@ class Curriculum(MethodResource):
         val = ",".join(val)
         insert = f"INSERT INTO curriculum.{group} VALUES {val};"
         
-        db, cursor = db_init()
-        cursor.execute(create)
-        cursor.execute(truncate)
-        cursor.execute(insert)
-        db.commit()
-        cursor.close()
-        db.close()
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
 
-        return redirect(url_for('curriculum',group=group))
-
+        try:
+            cursor.execute(create)
+            cursor.execute(truncate)
+            cursor.execute(insert)
+            db.commit()
+            cursor.close()
+            db.close()
+            return redirect(url_for('curriculum',group=group))
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('課表有誤')
 
 
