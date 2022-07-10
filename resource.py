@@ -4,6 +4,8 @@ from flask_apispec import doc,use_kwargs,MethodResource
 from model import GetPunchRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest
 import sta
 from flask import request, redirect, url_for
+from werkzeug.utils import secure_filename
+import os
 
 def db_init():
     db = pymysql.connect(
@@ -193,8 +195,12 @@ class Curriculum(MethodResource):
     def post(self,**kwargs):
         group = request.values.get('group')
         file = request.files.get('file')
-        if file is None :
-            return sta.failure('未上傳課表檔案(csv)')
+        if file is None or secure_filename(file.filename) == '':
+            return sta.failure('未上傳課表檔案')
+
+        file_ext = os.path.splitext(secure_filename(file.filename))[1]
+        if file_ext not in ['.csv']:
+            return sta.failure('請上傳csv檔')
 
         create = f"""
             CREATE TABLE IF NOT EXISTS curriculum.{group} (course varchar(50),date date,starthour int(10),startminute int(10),stophour int(10),stopminute int(10));
