@@ -1,12 +1,12 @@
 # ERP API
 
-## /api_doc :
-@GET
+## /api_doc
+###### GET
 api documentation
 
 
-## /count :
-@GET、POST (依班級、姓名、當日或當月、日期範圍篩選遲到、早退、缺席、未打卡、出席次數)
+## /count
+###### GET、POST (依班級、姓名、當日或當月、日期範圍篩選遲到、早退、缺席、未打卡、出席次數)
 
 -Input Parameters (group必填，其他可選) :
 group (班級，e.g.,fn101)
@@ -31,8 +31,8 @@ stopdate (結束日期，e.g.,2022-01-01)
 }
 
 
-## /course :
-@GET、POST (依班級、姓名、當日或當月、日期範圍、課程狀態篩選各課程總時數、出席時數，以及總課程時數、課程總數、已進行課程數、當日課程學習資源)
+## /course
+###### GET、POST (依班級、姓名、當日或當月、日期範圍、課程狀態篩選各課程總時數、出席時數，以及總課程時數、課程總數、已進行課程數、當日課程學習資源)
 
 -Input Parameters (group必填，其他可選) :
 group (班級，e.g.,fn101)
@@ -80,8 +80,8 @@ status (課程狀態，已進行:progress，未開始:unfinished)
 }
 
 
-## /curriculum :
-@GET (依班級、月份篩選課表)
+## /curriculum
+###### GET (依班級、月份篩選課表)
 
 -Input Parameters (group必填，其他可選) :
 group (班級，e.g.,fn101)
@@ -112,7 +112,7 @@ month (月份，e.g.,2022-04)
   "message": "success"
 }
 
-@POST (依班級上傳課表)
+###### POST (依班級上傳課表)
 
 -Input Parameters (group必填，其他可選) :
 group (班級，e.g.,fn101)
@@ -144,8 +144,8 @@ file (課表csv檔，e.g.,課表.csv)
 }
 
 
-## /leave :
-@GET (依班級、姓名、當日或當月、日期範圍、假別篩選請假列表)
+## /leave
+###### GET (依班級、姓名、當日或當月、日期範圍、假別篩選請假列表)
 
 -Input Parameters (group必填，其他可選) :
 group (班級，e.g.,fn101)
@@ -177,7 +177,7 @@ leavetype (假別，e.g.,病假)
   "message": "success"
 }
 
-@POST (依班級上傳請假表單)
+###### POST (依班級上傳請假表單)
 
 -Input Parameters (group必填，其他可選) :
 group (班級，e.g.,fn101)
