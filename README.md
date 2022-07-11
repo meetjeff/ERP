@@ -11,13 +11,13 @@
 
 **Input Parameters (group必填，其他可選)**
 * group (班級，e.g.,fn101)
-*name (姓名，不分大小寫，e.g.,amy)
-cur (當日或當月，當日:today，當月:month)
-startdate (起始日期，e.g.,2022-01-01)
-stopdate (結束日期，e.g.,2022-01-01)
+* name (姓名，不分大小寫，e.g.,amy)
+* cur (當日或當月，當日:today，當月:month)
+* startdate (起始日期，e.g.,2022-01-01)
+* stopdate (結束日期，e.g.,2022-01-01)
 
 -Success Example:
-{
+`{
   "data": [
     {
       "absent": 774,
@@ -29,7 +29,7 @@ stopdate (結束日期，e.g.,2022-01-01)
   ],
   "datatime": "2022-07-11T07:29:10.746734",
   "message": "success"
-}
+}`
 
 
 ## /course
