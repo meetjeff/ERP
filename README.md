@@ -2,8 +2,7 @@
 
 ## /api_doc
 ###### -GET-
-**api documentation**
-
+**api documentation**  
 
 ## /count
 ###### -GET、POST-
@@ -31,7 +30,7 @@
   "datatime": "2022-07-11T08:59:25.097818",
   "message": "success"
 }
-```
+```  
 
 ## /course
 ###### -GET、POST-
@@ -82,7 +81,7 @@
   "datatime": "2022-07-11T07:52:01.456255",
   "message": "success"
 }
-```
+```  
 
 ## /curriculum
 ###### -GET-
@@ -151,7 +150,7 @@
   "datatime": "2022-07-11T08:06:41.057632",
   "message": "success"
 }
-```
+```  
 
 ## /leave
 ###### -GET-
