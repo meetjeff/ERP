@@ -17,30 +17,20 @@
 * stopdate (結束日期，e.g.,2022-01-01)
 
 **Success Example**
-`{  
-  "data": [  
-  
-    {  
-    
-      "absent": 774,  
-      
-      "excused": 57,  
-      
-      "late": 837,  
-      
-      "miss": 175,  
-      
-      "present": 1505  
-      
-    }  
-    
-  ],  
-  
-  "datatime": "2022-07-11T07:29:10.746734",  
-  
-  "message": "success"  
-  
-}`
+```yaml
+{
+  "data": [
+    {
+      "absent": 774,
+      "excused": 57,
+      "late": 837,
+      "miss": 175,
+      "present": 1505
+    }
+  ],
+  "datatime": "2022-07-11T08:59:25.097818",
+  "message": "success"
+}
 
 
 ## /course
