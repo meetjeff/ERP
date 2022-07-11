@@ -1,6 +1,6 @@
 import pymysql
 from flask_apispec import doc,use_kwargs,MethodResource
-from model import GetPunchRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest
+from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest
 import sta
 from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -26,7 +26,9 @@ class Punch(MethodResource):
             'cur' : kwargs.get('cur'),
             'startdate': kwargs.get('startdate'),
             'stopdate': kwargs.get('stopdate'),
-            'status': kwargs.get('status')
+            'status': kwargs.get('status'),
+            'rows' : kwargs.get('rows',30),
+            'page' : kwargs.get('page',1)
         }
 
         query='WHERE date1 <= curdate()'
@@ -50,7 +52,7 @@ class Punch(MethodResource):
             query += 'AND outtime IS NULL AND intime IS NOT NULL'
 
         sql = f"""
-            SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
+            SELECT SQL_CALC_FOUND_ROWS date1 classdate,name1 student,intime,outtime,inip,outip,
             CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
             WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
@@ -71,8 +73,10 @@ class Punch(MethodResource):
             FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
             AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
             {query}
-            ORDER BY date1 DESC;
+            ORDER BY date1 DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
         """
+
+        paging=f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
 
         try:
             db, cursor = db_init()
@@ -81,7 +85,10 @@ class Punch(MethodResource):
 
         try:
             cursor.execute(sql)
-            data = cursor.fetchall()
+            punch = cursor.fetchall()
+            cursor.execute(paging)
+            pagination = cursor.fetchall()
+            data={'punch':punch,'pagination':pagination}
             db.commit()
             cursor.close()
             db.close()
@@ -373,7 +380,7 @@ class Leave(MethodResource):
 
 class Course(MethodResource):
     @doc(description="Course", tags=['Course'])
-    @use_kwargs(GetPunchRequest,location="query")
+    @use_kwargs(GetCourseRequest,location="query")
     def get(self,**kwargs):
         par={
             'group': kwargs.get('group'),
