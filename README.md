@@ -9,7 +9,7 @@
 ###### -GET、POST-
 (依班級、姓名、當日或當月、日期範圍篩選遲到、早退、缺席、未打卡、出席次數)
 
-**Input Parameters (group必填，其他可選):**
+**Input Parameters (group必填，其他可選) :**
 * group (班級，e.g.,fn101)
 * name (姓名，不分大小寫，e.g.,amy)
 * cur (當日或當月，當日:today，當月:month)
@@ -31,21 +31,22 @@
   "datatime": "2022-07-11T08:59:25.097818",
   "message": "success"
 }
-
+```
 
 ## /course
-###### GET、POST 
+###### -GET、POST-
 (依班級、姓名、當日或當月、日期範圍、課程狀態篩選各課程總時數、出席時數，以及總課程時數、課程總數、已進行課程數、當日課程學習資源)
 
-**Input Parameters (group必填，其他可選)**
-group (班級，e.g.,fn101)
-name (姓名，不分大小寫，e.g.,amy)
-cur (當日或當月，當日:today，當月:month)
-startdate (起始日期，e.g.,2022-01-01)
-stopdate (結束日期，e.g.,2022-01-01)
-status (課程狀態，已進行:progress，未開始:unfinished)
+**Input Parameters (group必填，其他可選) :**
+* group (班級，e.g.,fn101)
+* name (姓名，不分大小寫，e.g.,amy)
+* cur (當日或當月，當日:today，當月:month)
+* startdate (起始日期，e.g.,2022-01-01)
+* stopdate (結束日期，e.g.,2022-01-01)
+* status (課程狀態，已進行:progress，未開始:unfinished)
 
--Success Example:
+**Success Example**
+```yaml
 {
   "data": {
     "course": [
@@ -81,17 +82,18 @@ status (課程狀態，已進行:progress，未開始:unfinished)
   "datatime": "2022-07-11T07:52:01.456255",
   "message": "success"
 }
-
+```
 
 ## /curriculum
-###### GET 
+###### -GET-
 (依班級、月份篩選課表)
 
-**Input Parameters (group必填，其他可選)**
-group (班級，e.g.,fn101)
-month (月份，e.g.,2022-04)
+**Input Parameters (group必填，其他可選) :**
+* group (班級，e.g.,fn101)
+* month (月份，e.g.,2022-04)
 
--Success Example:
+**Success Example**
+```yaml
 {
   "data": [
     {
@@ -115,15 +117,17 @@ month (月份，e.g.,2022-04)
   "datatime": "2022-07-11T08:02:59.941018",
   "message": "success"
 }
+```
 
-###### POST 
+###### -POST-
 (依班級上傳課表)
 
-**Input Parameters (group必填，其他可選)**
-group (班級，e.g.,fn101)
-file (課表csv檔，e.g.,課表.csv)
+**Input Parameters (group必填，其他可選) :**
+* group (班級，e.g.,fn101)
+* file (課表csv檔，e.g.,課表.csv)
 
--Success Example (返回更新後的課表):
+**Success Example (返回更新後的課表)**
+```yaml
 {
   "data": [
     {
@@ -147,21 +151,22 @@ file (課表csv檔，e.g.,課表.csv)
   "datatime": "2022-07-11T08:06:41.057632",
   "message": "success"
 }
-
+```
 
 ## /leave
-###### GET 
+###### -GET-
 (依班級、姓名、當日或當月、日期範圍、假別篩選請假列表)
 
-**Input Parameters (group必填，其他可選)**
-group (班級，e.g.,fn101)
-name (姓名，不分大小寫，e.g.,amy)
-cur (當日或當月，當日:today，當月:month)
-startdate (起始日期，e.g.,2022-01-01)
-stopdate (結束日期，e.g.,2022-01-01)
-leavetype (假別，e.g.,病假)
+**Input Parameters (group必填，其他可選) :**
+* group (班級，e.g.,fn101)
+* name (姓名，不分大小寫，e.g.,amy)
+* cur (當日或當月，當日:today，當月:month)
+* startdate (起始日期，e.g.,2022-01-01)
+* stopdate (結束日期，e.g.,2022-01-01)
+* leavetype (假別，e.g.,病假)
 
--Success Example:
+**Success Example**
+```yaml
 {
   "data": [
     {
@@ -182,15 +187,17 @@ leavetype (假別，e.g.,病假)
   "datatime": "2022-07-11T07:14:13.042239",
   "message": "success"
 }
+```
 
-###### POST 
+###### -POST-
 (依班級上傳請假表單)
 
-**Input Parameters (group必填，其他可選)**
-group (班級，e.g.,fn101)
-file (請假csv檔，e.g.,請假.csv)
+**Input Parameters (group必填，其他可選) :**
+* group (班級，e.g.,fn101)
+* file (請假csv檔，e.g.,請假.csv)
 
--Success Example (返回更新後的請假表單):
+**Success Example (返回更新後的請假表單)**
+```yaml
 {
   "data": [
     {
@@ -214,7 +221,7 @@ file (請假csv檔，e.g.,請假.csv)
   "datatime": "2022-07-11T07:14:13.042239",
   "message": "success"
 }
-
+```
 
 /punch
 
