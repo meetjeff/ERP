@@ -2,16 +2,16 @@
 
 ## /api_doc
 ###### -GET-
-**api documentation
+**api documentation**
 
 
 ## /count
-###### GET、POST 
+###### -GET、POST-
 (依班級、姓名、當日或當月、日期範圍篩選遲到、早退、缺席、未打卡、出席次數)
 
 **Input Parameters (group必填，其他可選)**
-group (班級，e.g.,fn101)
-name (姓名，不分大小寫，e.g.,amy)
+* group (班級，e.g.,fn101)
+*name (姓名，不分大小寫，e.g.,amy)
 cur (當日或當月，當日:today，當月:month)
 startdate (起始日期，e.g.,2022-01-01)
 stopdate (結束日期，e.g.,2022-01-01)
