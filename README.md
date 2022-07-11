@@ -34,7 +34,7 @@
 
 ## /course
 ###### -GET、POST-
-依班級、姓名、當日或當月、日期範圍、進行狀態篩選課程
+依班級、姓名、當日或當月、日期範圍、進行狀態篩選課程  
 (各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源)
 
 **Input Parameters (group必填，其他可選) :**
@@ -225,8 +225,8 @@
 
 ## /punch
 ###### -GET、POST-
-依班級、姓名、當日或當月、日期範圍、打卡狀態篩選出缺勤列表
-(日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態)
+依班級、姓名、當日或當月、日期範圍、打卡狀態篩選出缺勤列表  
+(日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態)  
 可依單頁筆數進行分頁篩選(回傳總筆數、總頁數)
 
 **Input Parameters (group必填，其他可選) :**
@@ -235,7 +235,45 @@
 * cur (當日或當月，當日:today，當月:month)
 * startdate (起始日期，e.g.,2022-01-01)
 * stopdate (結束日期，e.g.,2022-01-01)
-* status (課程狀態，已進行:progress，未開始:unfinished)
+* status (打卡狀態，遲到:late，早退:excused，缺席:absent，未打卡:miss)
+* rows (單頁顯示筆數，預設30，e.g.,100)
+* page (第幾頁，預設1，e.g.,20)
 
-
-
+**Success Example**
+```yaml
+{
+  "data": {
+    "pagination": [
+      {
+        "totalpages": "67",
+        "totalrows": 3348
+      }
+    ],
+    "punch": [
+      {
+        "classdate": "2022-01-24",
+        "inip": "61.66.146.110",
+        "intime": "09:28:33",
+        "outip": "61.66.147.98",
+        "outtime": "17:37:23",
+        "status": "late",
+        "student": "JiaRong"
+      },
+      .
+      .
+      .
+      {
+        "classdate": "2022-01-21",
+        "inip": "140.137.222.59",
+        "intime": "08:41:04",
+        "outip": "140.137.222.59",
+        "outtime": "17:37:45",
+        "status": "present",
+        "student": "Max"
+      }
+    ]
+  },
+  "datatime": "2022-07-11T10:28:51.722611",
+  "message": "success"
+}
+```
