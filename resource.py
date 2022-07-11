@@ -1,5 +1,4 @@
 import pymysql
-import json
 from flask_apispec import doc,use_kwargs,MethodResource
 from model import GetPunchRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest
 import sta
@@ -48,22 +47,27 @@ class Punch(MethodResource):
         if par['status'] == 'absent':
             query += 'AND intime IS NULL'
         if par['status'] == 'miss':
-            query += 'AND outtime IS NULL'
+            query += 'AND outtime IS NULL AND intime IS NOT NULL'
 
         sql = f"""
             SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
+            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
+            WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
             (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
             FROM 
-            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
+            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
+            str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
+            str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
             FROM curriculum.`{par['group']}` GROUP BY date) AS curr join personal_data.`{par['group']}` AS person) 
             AS currn left join 
             (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
             FROM 
-            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, min(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) intime,ipaddress inip
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
+            min(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) intime,ipaddress inip
             FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
-            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, max(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) outtime,ipaddress outip 
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
+            max(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) outtime,ipaddress outip 
             FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
             AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
             {query}
@@ -113,21 +117,27 @@ class Count(MethodResource):
             query += f"AND date1 <= '{par['stopdate']}'"
 
         sql = f"""
-            SELECT COUNT(status='late' OR NULL) late,COUNT(status='excused' OR NULL) excused,COUNT(status='absent' OR NULL) absent,COUNT(status='miss' OR NULL) miss,COUNT(status='present' OR NULL) present 
+            SELECT COUNT(status='late' OR NULL) late,COUNT(status='excused' OR NULL) excused,COUNT(status='absent' OR NULL) absent,
+            COUNT(status='miss' OR NULL) miss,COUNT(status='present' OR NULL) present 
             FROM 
             (SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
+            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
+            WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
             (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
             FROM 
-            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
+            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
+            str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
+            str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
             FROM curriculum.`{par['group']}` GROUP BY date) AS curr join personal_data.`{par['group']}` AS person) 
             AS currn left join 
             (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
             FROM 
-            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, min(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) intime,ipaddress inip
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
+            min(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) intime,ipaddress inip
             FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
-            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, max(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) outtime,ipaddress outip 
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
+            max(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) outtime,ipaddress outip 
             FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
             AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
             {query}) AS punchlog;
@@ -167,8 +177,10 @@ class Curriculum(MethodResource):
         sql = f"""
             SELECT date,part,course,TIMESTAMPDIFF(HOUR,shouldin,shouldout) hours,'123' classroom 
             FROM 
-            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',
-            course,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s') shouldin,str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s') shouldout 
+            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
+            CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',
+            course,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s') shouldin,
+            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s') shouldout 
             FROM curriculum.`{par['group']}`) AS curr {query};
         """
 
@@ -198,12 +210,13 @@ class Curriculum(MethodResource):
         if file is None or secure_filename(file.filename) == '':
             return sta.failure('未上傳課表檔案')
 
-        file_ext = os.path.splitext(secure_filename(file.filename))[1]
-        if file_ext not in ['.csv']:
+        file_ext = os.path.splitext(secure_filename(file.filename))
+        if file_ext[1] not in ['.csv'] and file_ext[0] not in ['csv']:
             return sta.failure('請上傳csv檔')
 
         create = f"""
-            CREATE TABLE IF NOT EXISTS curriculum.{group} (course varchar(50),date date,starthour int(10),startminute int(10),stophour int(10),stopminute int(10));
+            CREATE TABLE IF NOT EXISTS curriculum.{group} 
+            (course varchar(50),date date,starthour int(10),startminute int(10),stophour int(10),stopminute int(10));
         """
         truncate = f"TRUNCATE TABLE curriculum.{group};"
         val = []
@@ -308,7 +321,8 @@ class Leave(MethodResource):
             return sta.failure('請上傳csv檔')
 
         create = f"""
-            CREATE TABLE IF NOT EXISTS leavelist.{group} (name varchar(20),date date,time varchar(40),type varchar(20),reason varchar(50));
+            CREATE TABLE IF NOT EXISTS leavelist.{group} 
+            (name varchar(20),date date,time varchar(40),type varchar(20),reason varchar(50));
         """
         truncate = f"TRUNCATE TABLE leavelist.{group};"
         val = []
@@ -356,4 +370,94 @@ class Leave(MethodResource):
             db.close()
             return sta.failure('檔案內容有誤')
 
+
+class Course(MethodResource):
+    @doc(description="Course", tags=['Course'])
+    @use_kwargs(GetPunchRequest,location="query")
+    def get(self,**kwargs):
+        par={
+            'group': kwargs.get('group'),
+            'name': kwargs.get('name'),
+            'cur' : kwargs.get('cur'),
+            'startdate': kwargs.get('startdate'),
+            'stopdate': kwargs.get('stopdate'),
+            'status': kwargs.get('status')
+        }
+
+        query = ""
+        if par['name'] is not None:
+            query += f"AND LOWER(Name) = LOWER('{par['name']}')"
+        if par['cur'] == 'today':
+            query += "AND date = curdate()"
+        if par['cur'] == 'month':
+            query += "AND date LIKE CONCAT(SUBSTRING(curdate(),1,7),'%')"
+        if par['startdate'] is not None:
+            query += f"AND date >= '{par['startdate']}'"
+        if par['stopdate'] is not None:
+            query += f"AND date <= '{par['stopdate']}'"
+        if par['status'] == 'progress':
+            query += 'AND date <= curdate()'
+        if par['status'] == 'unfinished':
+            query += 'AND date >= curdate()'
+    
+        if query != '':
+            query = 'WHERE' + query[3:]
+
+        courses = f"""
+            SELECT course,SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout)) totalhours,
+            SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
+            WHEN TIMEDIFF(shouldin,intime)<=0 
+            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
+            WHEN TIMEDIFF(shouldout,outtime)>=0 
+            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
+            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS present
+            FROM 
+            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
+            CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',course,
+            str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s') shouldin,
+            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s') shouldout 
+            FROM curriculum.`{par['group']}`) AS curr join personal_data.`{par['group']}` AS person
+            left join 
+            (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
+            FROM 
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
+            min(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) intime,ipaddress inip
+            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
+            max(SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),12)) outtime,ipaddress outip 
+            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON date=pun.date2 AND Name=pun.name2 {query} GROUP BY course;
+        """
+
+        totals = f"""
+            SELECT COUNT(DISTINCT(course)) totalcourse,
+            SUM(TIMESTAMPDIFF(HOUR,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
+            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))) totalhours,
+            COUNT(DISTINCT(CASE WHEN CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5))<=curdate() THEN course END)) AS progress 
+            FROM curriculum.`{par['group']}`;
+        """
+
+        resources = f"SELECT course,url FROM curriculum.`resource` WHERE date=curdate() AND groups='{par['group']}';"
+
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(courses)
+            course = cursor.fetchall()
+            cursor.execute(totals)
+            total = cursor.fetchall()
+            cursor.execute(resources)
+            resource = cursor.fetchall()
+            data={'course':course,'total':total,'resource':resource}
+            db.commit()
+            cursor.close()
+            db.close()
+
+            return sta.success(data)
+
+        except:
+            return sta.failure('參數有誤')
 
