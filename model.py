@@ -6,6 +6,16 @@ class GetPunchRequest(Schema):
     startdate = fields.Date(doc="startdate")
     stopdate = fields.Date(doc="stopdate")
     status = fields.Str(doc="status")
+    rows = fields.Int(doc="rows")
+    page = fields.Int(doc="page")
+
+class GetCourseRequest(Schema):
+    group = fields.Str(doc="group", required=True)
+    name = fields.Str(doc="name")
+    cur = fields.Str(doc="cur")
+    startdate = fields.Date(doc="startdate")
+    stopdate = fields.Date(doc="stopdate")
+    status = fields.Str(doc="status")
 
 class GetCountRequest(Schema):
     group = fields.Str(doc="group", required=True)
@@ -21,3 +31,11 @@ class GetCurriculumRequest(Schema):
 class PostCurriculumRequest(Schema):
     group = fields.Str(doc="group", required=True)
     file = fields.Raw(type='file',doc="file")
+
+class GetLeaveRequest(Schema):
+    group = fields.Str(doc="group", required=True)
+    name = fields.Str(doc="name")
+    cur = fields.Str(doc="cur")
+    startdate = fields.Date(doc="startdate")
+    stopdate = fields.Date(doc="stopdate")
+    leavetype = fields.Str(doc="leavetype")
