@@ -1,11 +1,11 @@
 # ERP API
 
-/api_doc :
+##/api_doc :
 @GET
 api documentation
 
 
-/count :
+##/count :
 @GET、POST (依班級、姓名、當日或當月、日期範圍篩選遲到、早退、缺席、未打卡、出席次數)
 
 -Input Parameters (group必填，其他可選) :
@@ -31,7 +31,7 @@ stopdate (結束日期，e.g.,2022-01-01)
 }
 
 
-/course :
+##/course :
 @GET、POST (依班級、姓名、當日或當月、日期範圍、課程狀態篩選各課程總時數、出席時數，以及總課程時數、課程總數、已進行課程數、當日課程學習資源)
 
 -Input Parameters (group必填，其他可選) :
@@ -80,7 +80,7 @@ status (課程狀態，已進行:progress，未開始:unfinished)
 }
 
 
-/curriculum :
+##/curriculum :
 @GET (依班級、月份篩選課表)
 
 -Input Parameters (group必填，其他可選) :
