@@ -106,7 +106,7 @@ class Punch(MethodResource):
 
 
 class Count(MethodResource):
-    @doc(description = "Count", tags = ['Count'])
+    @doc(description = "統計次數 : 遲到、早退、缺席、未打卡、出席", tags = ['Count'])
     @use_kwargs(GetCountRequest,location = "query")
     def get(self,**kwargs):
         par = {
@@ -174,7 +174,7 @@ class Count(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "Count", tags = ['Count'])
+    @doc(description = "統計次數 : 遲到、早退、缺席、未打卡、出席", tags = ['Count'])
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
         return redirect(url_for('count',**kwargs))
@@ -391,7 +391,7 @@ class Leave(MethodResource):
 
 
 class Course(MethodResource):
-    @doc(description = "Course", tags = ['Course'])
+    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源", tags = ['Course'])
     @use_kwargs(GetCourseRequest,location = "query")
     def get(self,**kwargs):
         par = {
@@ -482,7 +482,7 @@ class Course(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "Course", tags = ['Course'])
+    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源", tags = ['Course'])
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
         return redirect(url_for('course',**kwargs))
