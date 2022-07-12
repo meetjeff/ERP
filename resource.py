@@ -17,7 +17,7 @@ def db_init():
     return db, cursor
 
 class Punch(MethodResource):
-    @doc(description = "Punch", tags = ['Punch'])
+    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
     @use_kwargs(GetPunchRequest,location = "query")
     def get(self,**kwargs):        
         par = {
@@ -99,7 +99,7 @@ class Punch(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "Punch", tags = ['Punch'])
+    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
     @use_kwargs(GetPunchRequest)
     def post(self,**kwargs):        
         return redirect(url_for('punch',**kwargs))
@@ -181,7 +181,7 @@ class Count(MethodResource):
 
 
 class Curriculum(MethodResource):
-    @doc(description = "GetCurriculum", tags = ['Curriculum'])
+    @doc(description = "查詢課表 ( 日期、時段、課程、時數、教室 )", tags = ['Curriculum'])
     @use_kwargs(GetCurriculumRequest,location = "query")
     def get(self,**kwargs):
         par = {
@@ -221,7 +221,7 @@ class Curriculum(MethodResource):
             return sta.failure('參數有誤')
             
 
-    @doc(description = "UploadCurriculum", tags = ['Curriculum'])
+    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )", tags = ['Curriculum'])
     @use_kwargs(PostCurriculumRequest,location = "form")
     def post(self,**kwargs):
         group = request.values.get('group')
@@ -279,7 +279,7 @@ class Curriculum(MethodResource):
 
 
 class Leave(MethodResource):
-    @doc(description = "Leave", tags = ['Leave'])
+    @doc(description = "查詢請假列表 ( 姓名、日期、時段、假別、原因 )", tags = ['Leave'])
     @use_kwargs(GetLeaveRequest,location = "query")
     def get(self,**kwargs):        
         par = {
@@ -327,7 +327,7 @@ class Leave(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "PostLeave", tags = ['Leave'])
+    @doc(description = "上傳請假列表 ( 姓名、日期、時段、假別、原因 )", tags = ['Leave'])
     @use_kwargs(PostCurriculumRequest,location = "form")
     def post(self,**kwargs):
         group = request.values.get('group')
