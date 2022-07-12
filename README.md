@@ -163,7 +163,7 @@
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
-* leavetype&thinsp;&thinsp;( 假別，e.g., 病假 )
+* leavetype &thinsp;&thinsp;( 假別，e.g., 病假 )
 
 **Success Example**
 ```yaml
