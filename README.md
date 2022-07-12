@@ -193,8 +193,8 @@
 依班級上傳請假表單 ( 姓名、日期、時段、假別、原因 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group      ( 班級，e.g., fn101 )
-* file       ( 請假csv檔，e.g., 請假.csv )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* file　　　&thinsp;&thinsp;&thinsp;( 請假csv檔，e.g., 請假.csv )
 
 **Success Example  ( 返回更新後的請假表單 )**
 ```yaml
@@ -230,14 +230,14 @@
 可依單頁筆數進行分頁篩選 ( 回傳總筆數、總頁數 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group      ( 班級，e.g., fn101 )
-* name       ( 姓名，不分大小寫，e.g., jeff )
-* cur        ( 當日或當月，當日 : today，當月 : month )
-* startdate  ( 起始日期，e.g., 2022-01-01 )
-* stopdate   ( 結束日期，e.g., 2022-01-01 )
-* status     ( 打卡狀態，遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss )
-* rows       ( 單頁顯示筆數，預設30，e.g., 100 )
-* page       ( 第幾頁，預設1，e.g., 20 )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* startdate　( 起始日期，e.g., 2022-01-01 )
+* stopdate　( 結束日期，e.g., 2022-01-01 )
+* status　　&thinsp;( 打卡狀態，遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss )
+* rows　　　&thinsp;( 單頁顯示筆數，預設30，e.g., 100 )
+* page　　　&thinsp;( 第幾頁，預設1，e.g., 20 )
 
 **Success Example**
 ```yaml
