@@ -9,9 +9,9 @@
 依班級、姓名、當日或當月、日期範圍篩選統計數字 ( 遲到、早退、缺席、未打卡、出席 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group　　( 班級，e.g., fn101 )
-* name　 　( 姓名，不分大小寫，e.g., jeff )
-* cur　　　&thinsp;( 當日或當月，當日 : today，當月 : month )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
+* cur　　　&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　&thinsp;( 結束日期，e.g., 2022-01-01 )
 
