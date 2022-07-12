@@ -1,6 +1,6 @@
 from datetime import datetime
 
-def success(data=None):
+def success(data = None):
     if data is None:
         return {'message': 'success'}, 200
 
@@ -11,4 +11,4 @@ def success(data=None):
     }, 200
 
 def failure(message):
-    return {"message": "failure,"+message}, 500
+    return {"message": "failure," + message}, 500
