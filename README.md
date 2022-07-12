@@ -9,11 +9,11 @@
 依班級、姓名、當日或當月、日期範圍篩選統計數字(遲到、早退、缺席、未打卡、出席)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* name (姓名，不分大小寫，e.g.,jeff)
-* cur (當日或當月，當日:today，當月:month)
-* startdate (起始日期，e.g.,2022-01-01)
-* stopdate (結束日期，e.g.,2022-01-01)
+* group (班級，e.g., fn101)
+* name (姓名，不分大小寫，e.g., jeff)
+* cur (當日或當月，當日 : today，當月 : month)
+* startdate (起始日期，e.g., 2022-01-01)
+* stopdate (結束日期，e.g., 2022-01-01)
 
 **Success Example**
 ```yaml
@@ -38,12 +38,12 @@
 (各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* name (姓名，不分大小寫，e.g.,jeff)
-* cur (當日或當月，當日:today，當月:month)
-* startdate (起始日期，e.g.,2022-01-01)
-* stopdate (結束日期，e.g.,2022-01-01)
-* status (課程狀態，已進行:progress，未開始:unfinished)
+* group (班級，e.g., fn101)
+* name (姓名，不分大小寫，e.g., jeff)
+* cur (當日或當月，當日 : today，當月 : month)
+* startdate (起始日期，e.g., 2022-01-01)
+* stopdate (結束日期，e.g., 2022-01-01)
+* status (課程狀態，已進行 : progress，未開始 : unfinished)
 
 **Success Example**
 ```yaml
@@ -89,8 +89,8 @@
 依班級、月份篩選課表(日期、時段、課程、時數、教室)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* month (月份，e.g.,2022-04)
+* group (班級，e.g., fn101)
+* month (月份，e.g., 2022-04)
 
 **Success Example**
 ```yaml
@@ -123,8 +123,8 @@
 依班級上傳課表(日期、時段、課程、時數、教室)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* file (課表csv檔，e.g.,課表.csv)
+* group (班級，e.g., fn101)
+* file (課表csv檔，e.g., 課表.csv)
 
 **Success Example (返回更新後的課表)**
 ```yaml
@@ -158,12 +158,12 @@
 依班級、姓名、當日或當月、日期範圍、假別篩選請假列表(姓名、日期、時段、假別、原因)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* name (姓名，不分大小寫，e.g.,jeff)
-* cur (當日或當月，當日:today，當月:month)
-* startdate (起始日期，e.g.,2022-01-01)
-* stopdate (結束日期，e.g.,2022-01-01)
-* leavetype (假別，e.g.,病假)
+* group (班級，e.g., fn101)
+* name (姓名，不分大小寫，e.g., jeff)
+* cur (當日或當月，當日 : today，當月 : month)
+* startdate (起始日期，e.g., 2022-01-01)
+* stopdate (結束日期，e.g., 2022-01-01)
+* leavetype (假別，e.g., 病假)
 
 **Success Example**
 ```yaml
@@ -193,8 +193,8 @@
 依班級上傳請假表單(姓名、日期、時段、假別、原因)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* file (請假csv檔，e.g.,請假.csv)
+* group (班級，e.g., fn101)
+* file (請假csv檔，e.g., 請假.csv)
 
 **Success Example (返回更新後的請假表單)**
 ```yaml
@@ -230,14 +230,14 @@
 可依單頁筆數進行分頁篩選(回傳總筆數、總頁數)
 
 **Input Parameters (group必填，其他可選) :**
-* group (班級，e.g.,fn101)
-* name (姓名，不分大小寫，e.g.,jeff)
-* cur (當日或當月，當日:today，當月:month)
-* startdate (起始日期，e.g.,2022-01-01)
-* stopdate (結束日期，e.g.,2022-01-01)
-* status (打卡狀態，遲到:late，早退:excused，缺席:absent，未打卡:miss)
-* rows (單頁顯示筆數，預設30，e.g.,100)
-* page (第幾頁，預設1，e.g.,20)
+* group (班級，e.g., fn101)
+* name (姓名，不分大小寫，e.g., jeff)
+* cur (當日或當月，當日 : today，當月 : month)
+* startdate (起始日期，e.g., 2022-01-01)
+* stopdate (結束日期，e.g., 2022-01-01)
+* status (打卡狀態，遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss)
+* rows (單頁顯示筆數，預設30，e.g., 100)
+* page (第幾頁，預設1，e.g., 20)
 
 **Success Example**
 ```yaml
