@@ -120,11 +120,11 @@
 ```
 
 ###### -POST-
-依班級上傳課表 ( 日期、時段、課程、時數、教室 )
+依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
-* file　　　&thinsp;&thinsp;&thinsp;( 課表csv檔，e.g., 課表.csv )
+* file　　　&thinsp;&thinsp;&thinsp;( 課表csv檔、6欄、utf-8編碼，e.g., 課表.csv )
 
 **Success Example  ( 返回更新後的課表 )**
 ```yaml
@@ -194,7 +194,7 @@
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
-* file　　　&thinsp;&thinsp;&thinsp;( 請假csv檔，e.g., 請假.csv )
+* file　　　&thinsp;&thinsp;&thinsp;( 請假csv檔、5欄、utf-8編碼，e.g., 請假.csv )
 
 **Success Example  ( 返回更新後的請假表單 )**
 ```yaml
