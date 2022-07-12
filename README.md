@@ -43,7 +43,7 @@
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
-* status　　&thinsp;&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
+* status　　&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
 
 **Success Example**
 ```yaml
@@ -158,12 +158,12 @@
 依班級、姓名、當日或當月、日期範圍、假別篩選請假列表 ( 姓名、日期、時段、假別、原因 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group      ( 班級，e.g., fn101 )
-* name       ( 姓名，不分大小寫，e.g., jeff )
-* cur        ( 當日或當月，當日 : today，當月 : month )
-* startdate  ( 起始日期，e.g., 2022-01-01 )
-* stopdate   ( 結束日期，e.g., 2022-01-01 )
-* leavetype  ( 假別，e.g., 病假 )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* startdate　( 起始日期，e.g., 2022-01-01 )
+* stopdate　( 結束日期，e.g., 2022-01-01 )
+* leavetype　( 假別，e.g., 病假 )
 
 **Success Example**
 ```yaml
