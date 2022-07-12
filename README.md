@@ -43,7 +43,7 @@
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
-* status　　&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
+* status　　&thinsp;&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
 
 **Success Example**
 ```yaml
@@ -124,7 +124,7 @@
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
-* file　　　&thinsp;&thinsp;( 課表csv檔，e.g., 課表.csv )
+* file　　　&thinsp;&thinsp;&thinsp;( 課表csv檔，e.g., 課表.csv )
 
 **Success Example  ( 返回更新後的課表 )**
 ```yaml
