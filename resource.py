@@ -8,17 +8,17 @@ import os
 
 def db_init():
     db = pymysql.connect(
-        host='ec2-34-208-156-155.us-west-2.compute.amazonaws.com',
-        user='erp',
-        password='erp',
-        port=3306
+        host = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com',
+        user = 'erp',
+        password = 'erp',
+        port = 3306
     )
     cursor = db.cursor(pymysql.cursors.DictCursor)
     return db, cursor
 
 class Punch(MethodResource):
-    @doc(description="Punch", tags=['Punch'])
-    @use_kwargs(GetPunchRequest,location="query")
+    @doc(description = "Punch", tags = ['Punch'])
+    @use_kwargs(GetPunchRequest,location = "query")
     def get(self,**kwargs):        
         par={
             'group': kwargs.get('group'),
@@ -31,7 +31,7 @@ class Punch(MethodResource):
             'page' : kwargs.get('page',1)
         }
 
-        query='WHERE date1 <= curdate()'
+        query = 'WHERE date1 <= curdate()'
         if par['name'] is not None:
             query += f"AND LOWER(name1) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
@@ -53,8 +53,8 @@ class Punch(MethodResource):
 
         sql = f"""
             SELECT SQL_CALC_FOUND_ROWS date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
-            WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
+            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
+            WHEN outtime <= shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
             (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
             FROM 
@@ -67,16 +67,16 @@ class Punch(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(min(timestamp)),12) intime,ipaddress inip
-            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(max(timestamp)),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
             {query}
             ORDER BY date1 DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
         """
 
-        paging=f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
+        paging = f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
 
         try:
             db, cursor = db_init()
@@ -88,7 +88,7 @@ class Punch(MethodResource):
             punch = cursor.fetchall()
             cursor.execute(paging)
             pagination = cursor.fetchall()
-            data={'punch':punch,'pagination':pagination}
+            data = {'punch':punch,'pagination':pagination}
             db.commit()
             cursor.close()
             db.close()
@@ -99,7 +99,7 @@ class Punch(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description="Punch", tags=['Punch'])
+    @doc(description = "Punch", tags = ['Punch'])
     @use_kwargs(GetPunchRequest)
     def post(self,**kwargs):        
         par={
@@ -113,7 +113,7 @@ class Punch(MethodResource):
             'page' : kwargs.get('page',1)
         }
 
-        query='WHERE date1 <= curdate()'
+        query = 'WHERE date1 <= curdate()'
         if par['name'] is not None:
             query += f"AND LOWER(name1) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
@@ -135,8 +135,8 @@ class Punch(MethodResource):
 
         sql = f"""
             SELECT SQL_CALC_FOUND_ROWS date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
-            WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
+            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
+            WHEN outtime <= shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
             (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
             FROM 
@@ -149,16 +149,16 @@ class Punch(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(min(timestamp)),12) intime,ipaddress inip
-            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(max(timestamp)),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
             {query}
             ORDER BY date1 DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
         """
 
-        paging=f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
+        paging = f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
 
         try:
             db, cursor = db_init()
@@ -182,8 +182,8 @@ class Punch(MethodResource):
 
 
 class Count(MethodResource):
-    @doc(description="Count", tags=['Count'])
-    @use_kwargs(GetCountRequest,location="query")
+    @doc(description = "Count", tags = ['Count'])
+    @use_kwargs(GetCountRequest,location = "query")
     def get(self,**kwargs):
         par={
             'group': kwargs.get('group'),
@@ -193,7 +193,7 @@ class Count(MethodResource):
             'stopdate': kwargs.get('stopdate')
         }
 
-        query='WHERE date1 <= curdate()'
+        query = 'WHERE date1 <= curdate()'
         if par['name'] is not None:
             query += f"AND LOWER(name1) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
@@ -206,12 +206,12 @@ class Count(MethodResource):
             query += f"AND date1 <= '{par['stopdate']}'"
 
         sql = f"""
-            SELECT COUNT(status='late' OR NULL) late,COUNT(status='excused' OR NULL) excused,COUNT(status='absent' OR NULL) absent,
-            COUNT(status='miss' OR NULL) miss,COUNT(status='present' OR NULL) present 
+            SELECT COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,COUNT(status = 'absent' OR NULL) absent,
+            COUNT(status = 'miss' OR NULL) miss,COUNT(status = 'present' OR NULL) present 
             FROM 
             (SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
-            WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
+            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
+            WHEN outtime <= shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
             (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
             FROM 
@@ -224,11 +224,11 @@ class Count(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(min(timestamp)),12) intime,ipaddress inip
-            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(max(timestamp)),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
             {query}) AS punchlog;
         """
 
@@ -250,7 +250,7 @@ class Count(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description="Count", tags=['Count'])
+    @doc(description = "Count", tags = ['Count'])
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
         par={
@@ -261,7 +261,7 @@ class Count(MethodResource):
             'stopdate': kwargs.get('stopdate')
         }
 
-        query='WHERE date1 <= curdate()'
+        query = 'WHERE date1 <= curdate()'
         if par['name'] is not None:
             query += f"AND LOWER(name1) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
@@ -274,12 +274,12 @@ class Count(MethodResource):
             query += f"AND date1 <= '{par['stopdate']}'"
 
         sql = f"""
-            SELECT COUNT(status='late' OR NULL) late,COUNT(status='excused' OR NULL) excused,COUNT(status='absent' OR NULL) absent,
-            COUNT(status='miss' OR NULL) miss,COUNT(status='present' OR NULL) present 
+            SELECT COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,COUNT(status = 'absent' OR NULL) absent,
+            COUNT(status = 'miss' OR NULL) miss,COUNT(status = 'present' OR NULL) present 
             FROM 
             (SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime>=shouldin THEN 'late' 
-            WHEN outtime<=shouldout THEN 'excused' ELSE 'present' END AS 'status' 
+            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
+            WHEN outtime <= shouldout THEN 'excused' ELSE 'present' END AS 'status' 
             FROM
             (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
             FROM 
@@ -292,11 +292,11 @@ class Count(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(min(timestamp)),12) intime,ipaddress inip
-            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(max(timestamp)),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON currn.date1=pun.date2 AND currn.name1=pun.name2
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
             {query}) AS punchlog;
         """
 
@@ -319,8 +319,8 @@ class Count(MethodResource):
 
 
 class Curriculum(MethodResource):
-    @doc(description="GetCurriculum", tags=['Curriculum'])
-    @use_kwargs(GetCurriculumRequest,location="query")
+    @doc(description = "GetCurriculum", tags = ['Curriculum'])
+    @use_kwargs(GetCurriculumRequest,location = "query")
     def get(self,**kwargs):
         par={
             'group': kwargs.get('group'),
@@ -359,8 +359,8 @@ class Curriculum(MethodResource):
             return sta.failure('參數有誤')
             
 
-    @doc(description="UploadCurriculum", tags=['Curriculum'])
-    @use_kwargs(PostCurriculumRequest,location="form")
+    @doc(description = "UploadCurriculum", tags = ['Curriculum'])
+    @use_kwargs(PostCurriculumRequest,location = "form")
     def post(self,**kwargs):
         group = request.values.get('group')
         file = request.files.get('file')
@@ -379,18 +379,18 @@ class Curriculum(MethodResource):
         val = []
         
         try:
-            ts=file.readline().decode('utf-8')
+            ts = file.readline().decode('utf-8')
         except:
             return sta.failure('請使用utf-8編碼')
 
         while ts is not None and ts != '':
-            ts=file.readline().decode("utf-8")
+            ts = file.readline().decode("utf-8")
             if ts is None or ts == '':
                 break
             if len(ts.split(',')) != 6:
                 return sta.failure('欄位有誤(6欄)')
 
-            tsn=f"('{ts.split(',')[0]}','{ts.split(',')[1]}',"+",".join(ts.split(',')[2:])+")"
+            tsn = f"('{ts.split(',')[0]}','{ts.split(',')[1]}',"+",".join(ts.split(',')[2:])+")"
             val.append(tsn)
         file.close()
 
@@ -409,7 +409,7 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            return redirect(url_for('curriculum',group=group))
+            return redirect(url_for('curriculum',group = group))
         except:
             cursor.close()
             db.close()
@@ -417,8 +417,8 @@ class Curriculum(MethodResource):
 
 
 class Leave(MethodResource):
-    @doc(description="Leave", tags=['Leave'])
-    @use_kwargs(GetLeaveRequest,location="query")
+    @doc(description = "Leave", tags = ['Leave'])
+    @use_kwargs(GetLeaveRequest,location = "query")
     def get(self,**kwargs):        
         par={
             'group': kwargs.get('group'),
@@ -465,8 +465,8 @@ class Leave(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description="PostLeave", tags=['Leave'])
-    @use_kwargs(PostCurriculumRequest,location="form")
+    @doc(description = "PostLeave", tags = ['Leave'])
+    @use_kwargs(PostCurriculumRequest,location = "form")
     def post(self,**kwargs):
         group = request.values.get('group')
         file = request.files.get('file')
@@ -485,12 +485,12 @@ class Leave(MethodResource):
         val = []
         
         try:
-            ts=file.readline().decode('utf-8')
+            ts = file.readline().decode('utf-8')
         except:
             return sta.failure('請使用utf-8編碼')
 
         while ts is not None and ts != '':
-            ts=file.readline().decode('utf-8')
+            ts = file.readline().decode('utf-8')
             if ts is None or ts == '':
                 break
             if len(ts.split(',')) != 5:
@@ -529,8 +529,8 @@ class Leave(MethodResource):
 
 
 class Course(MethodResource):
-    @doc(description="Course", tags=['Course'])
-    @use_kwargs(GetCourseRequest,location="query")
+    @doc(description = "Course", tags = ['Course'])
+    @use_kwargs(GetCourseRequest,location = "query")
     def get(self,**kwargs):
         par={
             'group': kwargs.get('group'),
@@ -563,9 +563,9 @@ class Course(MethodResource):
         courses = f"""
             SELECT course,SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout)) totalhours,
             SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
-            WHEN TIMEDIFF(shouldin,intime)<=0 
+            WHEN TIMEDIFF(shouldin,intime) <= 0 
             THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
-            WHEN TIMEDIFF(shouldout,outtime)>=0 
+            WHEN TIMEDIFF(shouldout,outtime) >= 0 
             THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
             ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS present
             FROM 
@@ -579,11 +579,11 @@ class Course(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(min(timestamp)),12) intime,ipaddress inip
-            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(max(timestamp)),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON date=pun.date2 AND Name=pun.name2 {query} GROUP BY course;
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON date = pun.date2 AND Name = pun.name2 {query} GROUP BY course;
         """
 
         totals = f"""
@@ -594,7 +594,7 @@ class Course(MethodResource):
             FROM curriculum.`{par['group']}`;
         """
 
-        resources = f"SELECT course,url FROM curriculum.`resource` WHERE date=curdate() AND groups='{par['group']}';"
+        resources = f"SELECT course,url FROM curriculum.`resource` WHERE date=curdate() AND groups = '{par['group']}';"
 
         try:
             db, cursor = db_init()
@@ -608,18 +608,19 @@ class Course(MethodResource):
             total = cursor.fetchall()
             cursor.execute(resources)
             resource = cursor.fetchall()
-            data={'course':course,'total':total,'resource':resource}
+            data = {'course':course,'total':total,'resource':resource}
             db.commit()
             cursor.close()
             db.close()
-
             return sta.success(data)
-
+        
         except:
+            cursor.close()
+            db.close()
             return sta.failure('參數有誤')
 
 
-    @doc(description="Course", tags=['Course'])
+    @doc(description = "Course", tags = ['Course'])
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
         par={
@@ -653,9 +654,9 @@ class Course(MethodResource):
         courses = f"""
             SELECT course,SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout)) totalhours,
             SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
-            WHEN TIMEDIFF(shouldin,intime)<=0 
+            WHEN TIMEDIFF(shouldin,intime) <= 0 
             THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
-            WHEN TIMEDIFF(shouldout,outtime)>=0 
+            WHEN TIMEDIFF(shouldout,outtime) >= 0 
             THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
             ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS present
             FROM 
@@ -669,22 +670,22 @@ class Course(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(min(timestamp)),12) intime,ipaddress inip
-            FROM punch.`info` where `inout`='in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(FROM_UNIXTIME(max(timestamp)),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout`='out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON date=pun.date2 AND Name=pun.name2 {query} GROUP BY course;
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            AS pun ON date = pun.date2 AND Name = pun.name2 {query} GROUP BY course;
         """
 
         totals = f"""
             SELECT COUNT(DISTINCT(course)) totalcourse,
             SUM(TIMESTAMPDIFF(HOUR,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
             str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))) totalhours,
-            COUNT(DISTINCT(CASE WHEN CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5))<=curdate() THEN course END)) AS progress 
+            COUNT(DISTINCT(CASE WHEN CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) <= curdate() THEN course END)) AS progress 
             FROM curriculum.`{par['group']}`;
         """
 
-        resources = f"SELECT course,url FROM curriculum.`resource` WHERE date=curdate() AND groups='{par['group']}';"
+        resources = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}';"
 
         try:
             db, cursor = db_init()
@@ -698,14 +699,15 @@ class Course(MethodResource):
             total = cursor.fetchall()
             cursor.execute(resources)
             resource = cursor.fetchall()
-            data={'course':course,'total':total,'resource':resource}
+            data = {'course':course,'total':total,'resource':resource}
             db.commit()
             cursor.close()
             db.close()
-
             return sta.success(data)
 
         except:
+            cursor.close()
+            db.close()
             return sta.failure('參數有誤')
         
         
