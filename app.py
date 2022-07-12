@@ -9,10 +9,10 @@ app = Flask(__name__)
 api = Api(app)
 app.config.update({
     'APISPEC_SPEC': APISpec(
-        title='Erp Project API',
-        version='v1',
-        plugins=[MarshmallowPlugin()],
-        openapi_version='2.0.0'
+        title = 'Erp Project API',
+        version = 'v1',
+        plugins = [MarshmallowPlugin()],
+        openapi_version = '2.0.0'
     ),
     'APISPEC_SWAGGER_URL': '/api_doc',
     'APISPEC_SWAGGER_UI_URL': '/',
