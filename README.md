@@ -235,7 +235,7 @@
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
-* status　　&thinsp;( 打卡狀態，遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss )
+* status　　&thinsp;&thinsp;( 打卡狀態，遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss )
 * rows　　　( 單頁顯示筆數，預設30，e.g., 100 )
 * page　　　( 第幾頁，預設1，e.g., 20 )
 
