@@ -38,12 +38,12 @@
 ( 各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group      ( 班級，e.g., fn101 )
-* name       ( 姓名，不分大小寫，e.g., jeff )
-* cur        ( 當日或當月，當日 : today，當月 : month )
-* startdate  ( 起始日期，e.g., 2022-01-01 )
-* stopdate   ( 結束日期，e.g., 2022-01-01 )
-* status     ( 課程狀態，已進行 : progress，未開始 : unfinished )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* startdate　( 起始日期，e.g., 2022-01-01 )
+* stopdate　( 結束日期，e.g., 2022-01-01 )
+* status　　( 課程狀態，已進行 : progress，未開始 : unfinished )
 
 **Success Example**
 ```yaml
