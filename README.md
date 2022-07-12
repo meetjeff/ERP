@@ -123,8 +123,8 @@
 依班級上傳課表 ( 日期、時段、課程、時數、教室 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group      ( 班級，e.g., fn101 )
-* file       ( 課表csv檔，e.g., 課表.csv )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* file　　　&thinsp;&thinsp;( 課表csv檔，e.g., 課表.csv )
 
 **Success Example  ( 返回更新後的課表 )**
 ```yaml
