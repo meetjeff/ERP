@@ -20,7 +20,7 @@ class Punch(MethodResource):
     @doc(description = "Punch", tags = ['Punch'])
     @use_kwargs(GetPunchRequest,location = "query")
     def get(self,**kwargs):        
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -102,7 +102,7 @@ class Punch(MethodResource):
     @doc(description = "Punch", tags = ['Punch'])
     @use_kwargs(GetPunchRequest)
     def post(self,**kwargs):        
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -170,7 +170,7 @@ class Punch(MethodResource):
             punch = cursor.fetchall()
             cursor.execute(paging)
             pagination = cursor.fetchall()
-            data={'punch':punch,'pagination':pagination}
+            data = {'punch':punch,'pagination':pagination}
             db.commit()
             cursor.close()
             db.close()
@@ -185,7 +185,7 @@ class Count(MethodResource):
     @doc(description = "Count", tags = ['Count'])
     @use_kwargs(GetCountRequest,location = "query")
     def get(self,**kwargs):
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -253,7 +253,7 @@ class Count(MethodResource):
     @doc(description = "Count", tags = ['Count'])
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -322,7 +322,7 @@ class Curriculum(MethodResource):
     @doc(description = "GetCurriculum", tags = ['Curriculum'])
     @use_kwargs(GetCurriculumRequest,location = "query")
     def get(self,**kwargs):
-        par={
+        par = {
             'group': kwargs.get('group'),
             'month': kwargs.get('month')
         }
@@ -420,7 +420,7 @@ class Leave(MethodResource):
     @doc(description = "Leave", tags = ['Leave'])
     @use_kwargs(GetLeaveRequest,location = "query")
     def get(self,**kwargs):        
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -532,7 +532,7 @@ class Course(MethodResource):
     @doc(description = "Course", tags = ['Course'])
     @use_kwargs(GetCourseRequest,location = "query")
     def get(self,**kwargs):
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -623,7 +623,7 @@ class Course(MethodResource):
     @doc(description = "Course", tags = ['Course'])
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
