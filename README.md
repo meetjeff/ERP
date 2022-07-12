@@ -89,8 +89,8 @@
 依班級、月份篩選課表 ( 日期、時段、課程、時數、教室 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
-* group      ( 班級，e.g., fn101 )
-* month      ( 月份，e.g., 2022-04 )
+* group　　&thinsp;( 班級，e.g., fn101 )
+* month　　( 月份，e.g., 2022-04 )
 
 **Success Example**
 ```yaml
