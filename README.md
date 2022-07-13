@@ -61,16 +61,28 @@
         "totalhours": "217"
       }
     ],
-    "resource": [
-      {
-        "course": "JS與Node.js",
-        "url": "https://www.youtube.com/watch?v=RpMVP52YQRQ"
-      },
-      {
-        "course": "個人網頁專題製作",
-        "url": "https://www.youtube.com/watch?v=CLUPkcLQm64"
-      }
-    ],
+    "resource": {
+      "article": [
+        {
+          "course": "JS與Node.js",
+          "url": "https://tw.alphacamp.co/blog/node-js-and-javascript"
+        },
+        {
+          "course": "個人網頁專題製作",
+          "url": "http://120.105.184.250/hsiaoling/teaches-Study.htm"
+        }
+      ],
+      "video": [
+        {
+          "course": "JS與Node.js",
+          "url": "https://www.youtube.com/watch?v=RpMVP52YQRQ"
+        },
+        {
+          "course": "個人網頁專題製作",
+          "url": "https://www.youtube.com/watch?v=CLUPkcLQm64&t=2622s"
+        }
+      ]
+    },
     "total": [
       {
         "progress": 34,
