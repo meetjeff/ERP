@@ -452,11 +452,13 @@ class Course(MethodResource):
             SELECT COUNT(DISTINCT(course)) totalcourse,
             SUM(TIMESTAMPDIFF(HOUR,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
             str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))) totalhours,
-            COUNT(DISTINCT(CASE WHEN CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5))<=curdate() THEN course END)) AS progress 
+            COUNT(DISTINCT(CASE WHEN CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) <= curdate() THEN course END)) AS progress 
             FROM curriculum.`{par['group']}`;
         """
 
-        resources = f"SELECT course,url FROM curriculum.`resource` WHERE date=curdate() AND groups = '{par['group']}';"
+        videos = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}' AND content = 'video';"
+
+        articles = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}' AND content = 'article';"
 
         try:
             db, cursor = db_init()
@@ -468,13 +470,15 @@ class Course(MethodResource):
             course = cursor.fetchall()
             cursor.execute(totals)
             total = cursor.fetchall()
-            cursor.execute(resources)
-            resource = cursor.fetchall()
-            data = {'course':course,'total':total,'resource':resource}
+            cursor.execute(videos)
+            video = cursor.fetchall()
+            cursor.execute(articles)
+            article = cursor.fetchall()
+            resource = {'video':video,'article':article}
+            data={'course':course,'total':total,'resource':resource}
             db.commit()
             cursor.close()
             db.close()
-            return sta.success(data)
         
         except:
             cursor.close()
