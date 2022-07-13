@@ -479,6 +479,7 @@ class Course(MethodResource):
             db.commit()
             cursor.close()
             db.close()
+            return sta.success(data)
         
         except:
             cursor.close()
