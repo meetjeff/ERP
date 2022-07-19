@@ -1,0 +1,8 @@
+beautifulsoup4
+requests
+lxml
+google
+pymysql
+pandas
+requests_html
+sqlalchemy
