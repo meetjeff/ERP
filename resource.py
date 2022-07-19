@@ -501,6 +501,7 @@ class Course(MethodResource):
         
 
 class Crawler(MethodResource):
+    @doc(description = "查詢課程學習資源爬蟲執行狀態", tags = ['Crawler'])
     @use_kwargs(CrawlerRequest,location="query")
     def get(self,**kwargs):
         group= kwargs.get('group')
@@ -526,6 +527,7 @@ class Crawler(MethodResource):
             db.close()
             return sta.failure('參數有誤')
 
+    @doc(description = "觸發課程學習資源爬蟲", tags = ['Crawler'])
     @use_kwargs(CrawlerRequest)
     def post(self,**kwargs):
         group= kwargs.get('group')
