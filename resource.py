@@ -5,6 +5,8 @@ import sta
 from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
+import requests,json
+import subprocess
 
 def db_init():
     db = pymysql.connect(
@@ -271,6 +273,7 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
+            requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"})
             return redirect(url_for('curriculum',group = group))
         except:
             cursor.close()
@@ -496,4 +499,50 @@ class Course(MethodResource):
     def post(self,**kwargs):
         return redirect(url_for('course',**kwargs))
         
-        
+
+class Crawler(MethodResource):
+    @use_kwargs(CrawlerRequest,location="query")
+    def get(self,**kwargs):
+        group= kwargs.get('group')
+
+        sql = f"SELECT status FROM curriculum.`crawlerstatus` WHERE groups='{group}';"
+
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(sql)
+            data = cursor.fetchone()
+            if data == None:
+                data = {"status": "inactivated"}
+            db.commit()
+            cursor.close()
+            db.close()
+            return data
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
+
+    @use_kwargs(CrawlerRequest)
+    def post(self,**kwargs):
+        group= kwargs.get('group')
+        sql = f"INSERT INTO curriculum.crawlerstatus (groups, status) VALUES('{group}', 'in progress') ON DUPLICATE KEY UPDATE status='in progress';"
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(sql)
+            db.commit()
+            cursor.close()
+            db.close()
+            subprocess.Popen(f"python3 crawler.py {group}",shell=True)
+            return redirect(url_for('crawler',group=group))
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
