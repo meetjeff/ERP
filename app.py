@@ -3,7 +3,7 @@ from flask_restful import Api
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec.extension import FlaskApiSpec
-from resource import Punch,Count,Curriculum,Leave,Course
+from resource import Punch,Count,Curriculum,Leave,Course,Crawler
 
 app = Flask(__name__)
 api = Api(app)
@@ -31,6 +31,8 @@ api.add_resource(Leave,'/leave')
 docs.register(Leave)
 api.add_resource(Course,'/course')
 docs.register(Course)
+api.add_resource(Crawler,'/crawler')
+docs.register(Crawler)
 
 if __name__ == '__main__':
     app.run('0.0.0.0', debug=True)
