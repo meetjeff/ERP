@@ -7,12 +7,12 @@ import pandas as pd
 from requests_html import HTMLSession
 from sqlalchemy import create_engine
 import sys
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
 
 logging.basicConfig(filename = "craw.log",
-                    level = logging.DEBUG,
+                    level = logging.WARNING,
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
@@ -122,7 +122,7 @@ def arc(group):
 
 if __name__ == '__main__':
 
-    with ProcessPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor() as executor:
         executor.submit(yt, group)
         executor.submit(arc, group)
 
