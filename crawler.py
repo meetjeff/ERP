@@ -7,7 +7,6 @@ import pandas as pd
 from requests_html import HTMLSession
 from sqlalchemy import create_engine
 import sys
-from concurrent.futures import ThreadPoolExecutor
 import logging
 import os
 
@@ -54,7 +53,7 @@ def yt(group):
                 #匯入資料
                 sql = f"INSERT INTO curriculum.resource (groups, course, url, content, title) VALUES ('{group}', '{query}', '{link}', 'video', '{query}')"
                 engine.execute(sql)
-                if i == 0:
+                if i == 2:
                     break
             except Exception as e:
                 logging.info(e)
@@ -81,7 +80,7 @@ def arc(group):
     headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15'}
     for cur in list_of_curriculum:
         query = cur+" 教學" #用課程名稱+教學避免查出官方網站或官方文件
-        for i in search(query, stop = 1, pause = 1.0):   #query表示關鍵字，stop表示查詢筆數，pause表示查詢停留時間
+        for i in search(query, stop = 3, pause = 1.0):   #query表示關鍵字，stop表示查詢筆數，pause表示查詢停留時間
             if 'youtube' in i:  #跳過三個常常出現的不相干網站
                 pass
             elif 'udemy' in i:
@@ -122,9 +121,8 @@ def arc(group):
 
 if __name__ == '__main__':
 
-    with ThreadPoolExecutor() as executor:
-        executor.submit(yt, group)
-        executor.submit(arc, group)
+    yt(group)
+    arc(group)
 
     db = pymysql.connect(
         host = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com',
