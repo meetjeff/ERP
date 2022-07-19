@@ -456,9 +456,13 @@ class Course(MethodResource):
             FROM curriculum.`{par['group']}`;
         """
 
-        videos = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}' AND content = 'video';"
+        videos = f"""SELECT course,url FROM curriculum.`resource` 
+            WHERE course IN (SELECT DISTINCT(course) FROM curriculum.`{par['group']}` WHERE date = curdate()) AND content = 'video';
+        """
 
-        articles = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}' AND content = 'article';"
+        articles = f"""SELECT course,title,url FROM curriculum.`resource` 
+            WHERE course IN (SELECT DISTINCT(course) FROM curriculum.`{par['group']}` WHERE date = curdate()) AND content = 'article';
+        """
 
         try:
             db, cursor = db_init()
