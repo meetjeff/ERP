@@ -39,3 +39,6 @@ class GetLeaveRequest(Schema):
     startdate = fields.Date(doc = "startdate")
     stopdate = fields.Date(doc = "stopdate")
     leavetype = fields.Str(doc = "leavetype")
+    
+class CrawlerRequest(Schema):
+    group = fields.Str(doc="group", required=True)
