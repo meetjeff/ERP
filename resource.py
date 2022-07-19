@@ -459,12 +459,14 @@ class Course(MethodResource):
             FROM curriculum.`{par['group']}`;
         """
 
-        videos = f"""SELECT course,url FROM curriculum.`resource` 
-            WHERE course IN (SELECT DISTINCT(course) FROM curriculum.`{par['group']}` WHERE date = curdate()) AND content = 'video';
+        videos = f"""
+            SELECT course,url FROM curriculum.`resource` WHERE course IN (SELECT DISTINCT(course) 
+            FROM curriculum.`{par['group']}` WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) = curdate()) AND content = 'video';
         """
 
-        articles = f"""SELECT course,title,url FROM curriculum.`resource` 
-            WHERE course IN (SELECT DISTINCT(course) FROM curriculum.`{par['group']}` WHERE date = curdate()) AND content = 'article';
+        articles = f"""
+            SELECT course,title,url FROM curriculum.`resource` WHERE course IN (SELECT DISTINCT(course) 
+            FROM curriculum.`{par['group']}` WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) = curdate()) AND content = 'article';
         """
 
         try:
