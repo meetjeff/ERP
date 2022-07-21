@@ -310,7 +310,7 @@ class Leave(MethodResource):
 
         if query != '':
             query = 'WHERE' + query[3:]
-        sql = f"SELECT * FROM leavelist.`{par['group']}` {query} ORDER BY date DESC;"
+        sql = f"SELECT DATE_FORMAT(date,'%Y-%m-%d') date,name,time,type,reason FROM leavelist.`{par['group']}` {query} ORDER BY date DESC;"
         
         try:
             db, cursor = db_init()
