@@ -132,7 +132,7 @@ class Count(MethodResource):
             query += f"AND date1 <= '{par['stopdate']}'"
 
         sql = f"""
-            SELECT COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,COUNT(status = 'absent' OR NULL) absent,
+            SELECT COALESCE(classdate,'total') date,COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,COUNT(status = 'absent' OR NULL) absent,
             COUNT(status = 'miss' OR NULL) miss,COUNT(status = 'present' OR NULL) present 
             FROM 
             (SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
@@ -155,7 +155,7 @@ class Count(MethodResource):
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(max(timestamp)),@@session.time_zone,'+8:00'),12) outtime,ipaddress outip 
             FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
             AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
-            {query}) AS punchlog;
+            {query}) AS punchlog GROUP BY classdate WITH ROLLUP;
         """
 
         try:
