@@ -202,13 +202,11 @@ class Curriculum(MethodResource):
             query = f"WHERE date LIKE '{par['month']}%'"
         
         sql = f"""
-            SELECT date,part,course,TIMESTAMPDIFF(HOUR,shouldin,shouldout) hours,'123' classroom 
-            FROM 
-            (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
-            CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',
-            course,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s') shouldin,
-            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s') shouldout 
-            FROM curriculum.`{par['group']}`) AS curr {query};
+            SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
+            CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',course,
+            TIMESTAMPDIFF(HOUR,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
+            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s')) hours,
+            '123' classroom FROM curriculum.`{par['group']}` {query};
         """
 
         try:
