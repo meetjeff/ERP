@@ -132,8 +132,8 @@ class Count(MethodResource):
             query += f"AND date1 <= '{par['stopdate']}'"
 
         sql = f"""
-            SELECT COALESCE(classdate,'total') date,COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,COUNT(status = 'absent' OR NULL) absent,
-            COUNT(status = 'miss' OR NULL) miss,COUNT(status = 'present' OR NULL) present 
+            SELECT COALESCE(classdate,'total') date,COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,
+            COUNT(status = 'absent' OR NULL) absent,COUNT(status = 'miss' OR NULL) miss,COUNT(status = 'present' OR NULL) present 
             FROM 
             (SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
             CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
