@@ -6,7 +6,7 @@
 
 ## /count
 ###### -GET、POST-
-依班級、姓名、當日或當月、日期範圍篩選統計數字 ( 遲到、早退、缺席、未打卡、出席 )
+依班級、姓名、當日或當月、日期範圍篩選統計數字 ( 每日遲到、早退、缺席、未打卡、出席數及總合 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
@@ -20,14 +20,34 @@
 {
   "data": [
     {
-      "absent": 774,
-      "excused": 57,
-      "late": 837,
-      "miss": 175,
-      "present": 1505
+      "absent": 4,
+      "date": "2022-02-15",
+      "excused": 1,
+      "late": 6,
+      "miss": 3,
+      "present": 17
+    },
+    .
+    .
+    .
+    {
+      "absent": 21,
+      "date": "2022-05-26",
+      "excused": 1,
+      "late": 2,
+      "miss": 4,
+      "present": 3
+    },
+    {
+      "absent": 787,
+      "date": "total",
+      "excused": 59,
+      "late": 838,
+      "miss": 170,
+      "present": 1494
     }
   ],
-  "datatime": "2022-07-11T08:59:25.097818",
+  "datatime": "2022-07-21T16:07:34.644939",
   "message": "success"
 }
 ```  
@@ -213,7 +233,7 @@
 {
   "data": [
     {
-      "date": "Tue, 29 Mar 2022 00:00:00 GMT",
+      "date": "2022-03-29",
       "name": "Mia",
       "reason": "驗PCR\r\n",
       "time": "上午 9:00 ~ 12:00",
@@ -223,7 +243,7 @@
     .
     .
     {
-      "date": "Tue, 29 Mar 2022 00:00:00 GMT",
+      "date": "2022-03-29",
       "name": "Peter",
       "reason": "no reason",
       "time": "下午 13:30~ 課程結束",
