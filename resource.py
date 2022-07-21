@@ -1,12 +1,10 @@
 import pymysql
 from flask_apispec import doc,use_kwargs,MethodResource
-from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest,CrawlerRequest
+from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest
 import sta
 from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
-import requests,json
-import subprocess
 
 def db_init():
     db = pymysql.connect(
@@ -19,10 +17,10 @@ def db_init():
     return db, cursor
 
 class Punch(MethodResource):
-    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
-    @use_kwargs(GetPunchRequest,location = "query")
+    @doc(description="出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags=['Punch'])
+    @use_kwargs(GetPunchRequest,location="query")
     def get(self,**kwargs):        
-        par = {
+        par={
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -33,17 +31,17 @@ class Punch(MethodResource):
             'page' : kwargs.get('page',1)
         }
 
-        query = 'WHERE date1 <= curdate()'
+        query='WHERE date <= curdate()'
         if par['name'] is not None:
-            query += f"AND LOWER(name1) = LOWER('{par['name']}')"
+            query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
-            query += "AND date1 = curdate()"
+            query += "AND date = curdate()"
         if par['cur'] == 'month':
-            query += "AND date1 LIKE CONCAT(SUBSTRING(curdate(),1,7),'%')"
+            query += "AND date LIKE CONCAT(SUBSTRING(curdate(),1,7),'%')"
         if par['startdate'] is not None:
-            query += f"AND date1 >= '{par['startdate']}'"
+            query += f"AND date >= '{par['startdate']}'"
         if par['stopdate'] is not None:
-            query += f"AND date1 <= '{par['stopdate']}'"
+            query += f"AND date <= '{par['stopdate']}'"
         if par['status'] == 'late':
             query += 'AND intime >= shouldin'
         if par['status'] == 'excused':
@@ -52,20 +50,20 @@ class Punch(MethodResource):
             query += 'AND intime IS NULL'
         if par['status'] == 'miss':
             query += 'AND outtime IS NULL AND intime IS NOT NULL'
+        if par['status'] == 'regular':
+            query += 'AND outtime >= shouldout AND intime <= shouldin'
 
         sql = f"""
-            SELECT SQL_CALC_FOUND_ROWS date1 classdate,name1 student,intime,outtime,inip,outip,
+            SELECT SQL_CALC_FOUND_ROWS date,name,intime,outtime,inip,outip,
             CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
-            WHEN outtime <= shouldout THEN 'excused' ELSE 'present' END AS 'status' 
-            FROM
-            (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
+            WHEN outtime <= shouldout THEN 'excused' ELSE 'regular' END AS 'status' 
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
             str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
             str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
-            FROM curriculum.`{par['group']}` GROUP BY date) AS curr join personal_data.`{par['group']}` AS person) 
-            AS currn left join 
-            (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
+            FROM curriculum.`{par['group']}` GROUP BY date) AS curr join 
+            (SELECT Name name FROM personal_data.`{par['group']}`) AS person left join 
+            (SELECT a.date date,a.fullname name,intime,outtime,inip,outip 
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip
@@ -73,12 +71,11 @@ class Punch(MethodResource):
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(max(timestamp)),@@session.time_zone,'+8:00'),12) outtime,ipaddress outip 
             FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
-            {query}
-            ORDER BY date1 DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
+            AS pun using(date,name)
+            {query} ORDER BY date DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
         """
 
-        paging = f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
+        paging=f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
 
         try:
             db, cursor = db_init()
@@ -90,7 +87,7 @@ class Punch(MethodResource):
             punch = cursor.fetchall()
             cursor.execute(paging)
             pagination = cursor.fetchall()
-            data = {'punch':punch,'pagination':pagination}
+            data={'punch':punch,'pagination':pagination}
             db.commit()
             cursor.close()
             db.close()
@@ -101,17 +98,18 @@ class Punch(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
+    @doc(description="出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags=['Punch'])
     @use_kwargs(GetPunchRequest)
     def post(self,**kwargs):        
         return redirect(url_for('punch',**kwargs))
 
 
+
 class Count(MethodResource):
-    @doc(description = "統計次數 : 遲到、早退、缺席、未打卡、出席", tags = ['Count'])
-    @use_kwargs(GetCountRequest,location = "query")
+    @doc(description="統計次數 : 遲到、早退、缺席、未打卡、出席", tags=['Count'])
+    @use_kwargs(GetCountRequest,location="query")
     def get(self,**kwargs):
-        par = {
+        par={
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -119,43 +117,51 @@ class Count(MethodResource):
             'stopdate': kwargs.get('stopdate')
         }
 
-        query = 'WHERE date1 <= curdate()'
+        query='WHERE date <= curdate()'
         if par['name'] is not None:
-            query += f"AND LOWER(name1) = LOWER('{par['name']}')"
+            query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
-            query += "AND date1 = curdate()"
+            query += "AND date = curdate()"
         if par['cur'] == 'month':
-            query += "AND date1 LIKE CONCAT(SUBSTRING(curdate(),1,7),'%')"
+            query += "AND date LIKE CONCAT(SUBSTRING(curdate(),1,7),'%')"
         if par['startdate'] is not None:
-            query += f"AND date1 >= '{par['startdate']}'"
+            query += f"AND date >= '{par['startdate']}'"
         if par['stopdate'] is not None:
-            query += f"AND date1 <= '{par['stopdate']}'"
+            query += f"AND date <= '{par['stopdate']}'"
 
         sql = f"""
-            SELECT COALESCE(classdate,'total') date,COUNT(status = 'late' OR NULL) late,COUNT(status = 'excused' OR NULL) excused,
-            COUNT(status = 'absent' OR NULL) absent,COUNT(status = 'miss' OR NULL) miss,COUNT(status = 'present' OR NULL) present 
-            FROM 
-            (SELECT date1 classdate,name1 student,intime,outtime,inip,outip,
-            CASE WHEN intime IS NULL THEN 'absent' WHEN outtime IS NULL THEN 'miss' WHEN intime >= shouldin THEN 'late' 
-            WHEN outtime <= shouldout THEN 'excused' ELSE 'present' END AS 'status' 
-            FROM
-            (SELECT curr.date date1,person.Name name1,curr.shouldin,curr.shouldout 
+            SELECT COALESCE(date,'total') day,COUNT(intime >= shouldin OR NULL) late,COUNT(outtime <= shouldout OR NULL) excused,
+            COUNT(intime IS NULL OR NULL) absent,COUNT(outtime IS NULL AND intime IS NOT NULL OR NULL) miss,
+            COUNT(outtime >= shouldout AND intime <= shouldin OR NULL) regular,
+            SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout)) totalhours,
+            SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
+            WHEN TIMEDIFF(shouldin,intime) <= 0 
+            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
+            WHEN TIMEDIFF(shouldout,outtime) >= 0 
+            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
+            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS attendancehours,
+            SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout))-
+            SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
+            WHEN TIMEDIFF(shouldin,intime) <= 0 
+            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
+            WHEN TIMEDIFF(shouldout,outtime) >= 0 
+            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
+            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS lackhours
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
             str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
             str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
-            FROM curriculum.`{par['group']}` GROUP BY date) AS curr join personal_data.`{par['group']}` AS person) 
-            AS currn left join 
-            (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
+            FROM curriculum.`{par['group']}` GROUP BY date) AS curr join 
+            (SELECT Name name FROM personal_data.`{par['group']}`) AS person left join 
+            (SELECT a.date date,a.fullname name,intime,outtime,inip,outip 
             FROM 
-            (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
-            SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip
+            ((SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
+            SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip 
             FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
-            (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
+            (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(max(timestamp)),@@session.time_zone,'+8:00'),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
-            AS pun ON currn.date1 = pun.date2 AND currn.name1 = pun.name2
-            {query}) AS punchlog GROUP BY classdate WITH ROLLUP;
+            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname))) 
+            AS pun using (date,name) {query} GROUP BY date WITH ROLLUP;
         """
 
         try:
@@ -176,7 +182,7 @@ class Count(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "統計次數 : 遲到、早退、缺席、未打卡、出席", tags = ['Count'])
+    @doc(description="統計次數 : 遲到、早退、缺席、未打卡、出席", tags=['Count'])
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
         return redirect(url_for('count',**kwargs))
@@ -273,7 +279,6 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"})
             return redirect(url_for('curriculum',group = group))
         except:
             cursor.close()
@@ -459,15 +464,9 @@ class Course(MethodResource):
             FROM curriculum.`{par['group']}`;
         """
 
-        videos = f"""
-            SELECT course,url FROM curriculum.`resource` WHERE course IN (SELECT DISTINCT(course) 
-            FROM curriculum.`{par['group']}` WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) = curdate()) AND content = 'video';
-        """
+        videos = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}' AND content = 'video';"
 
-        articles = f"""
-            SELECT course,title,url FROM curriculum.`resource` WHERE course IN (SELECT DISTINCT(course) 
-            FROM curriculum.`{par['group']}` WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) = curdate()) AND content = 'article';
-        """
+        articles = f"SELECT course,url FROM curriculum.`resource` WHERE date = curdate() AND groups = '{par['group']}' AND content = 'article';"
 
         try:
             db, cursor = db_init()
@@ -500,53 +499,3 @@ class Course(MethodResource):
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
         return redirect(url_for('course',**kwargs))
-        
-
-class Crawler(MethodResource):
-    @doc(description = "查詢學習資源爬蟲狀態", tags = ['Crawler'])
-    @use_kwargs(CrawlerRequest,location="query")
-    def get(self,**kwargs):
-        group= kwargs.get('group')
-
-        sql = f"SELECT status FROM curriculum.`crawlerstatus` WHERE groups='{group}';"
-
-        try:
-            db, cursor = db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
-
-        try:
-            cursor.execute(sql)
-            data = cursor.fetchone()
-            if data == None:
-                data = {"status": "inactivated"}
-            db.commit()
-            cursor.close()
-            db.close()
-            return data
-        except:
-            cursor.close()
-            db.close()
-            return sta.failure('參數有誤')
-
-    @doc(description = "觸發學習資源爬蟲", tags = ['Crawler'])
-    @use_kwargs(CrawlerRequest)
-    def post(self,**kwargs):
-        group= kwargs.get('group')
-        sql = f"INSERT INTO curriculum.crawlerstatus (groups, status) VALUES('{group}', 'in progress') ON DUPLICATE KEY UPDATE status='in progress';"
-        try:
-            db, cursor = db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
-
-        try:
-            cursor.execute(sql)
-            db.commit()
-            cursor.close()
-            db.close()
-            subprocess.Popen(f"python3 crawler.py {group}",shell=True)
-            return redirect(url_for('crawler',group=group))
-        except:
-            cursor.close()
-            db.close()
-            return sta.failure('參數有誤')
