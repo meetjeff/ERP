@@ -1,10 +1,12 @@
 import pymysql
 from flask_apispec import doc,use_kwargs,MethodResource
-from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest
+from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest,CrawlerRequest
 import sta
 from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
+import requests,json
+import subprocess
 
 def db_init():
     db = pymysql.connect(
