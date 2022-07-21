@@ -497,3 +497,55 @@ class Course(MethodResource):
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
         return redirect(url_for('course',**kwargs))
+    
+
+class Crawler(MethodResource):
+    @doc(description = "查詢學習資源爬蟲狀態", tags = ['Crawler'])
+    @use_kwargs(CrawlerRequest,location="query")
+    def get(self,**kwargs):
+        group= kwargs.get('group')
+
+        sql = f"SELECT status FROM curriculum.`crawlerstatus` WHERE groups='{group}';"
+
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(sql)
+            data = cursor.fetchone()
+            if data == None:
+                data = {"status": "inactivated"}
+            db.commit()
+            cursor.close()
+            db.close()
+            return data
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
+
+    @doc(description = "觸發學習資源爬蟲", tags = ['Crawler'])
+    @use_kwargs(CrawlerRequest)
+    def post(self,**kwargs):
+        group= kwargs.get('group')
+        sql = f"INSERT INTO curriculum.crawlerstatus (groups, status) VALUES('{group}', 'in progress') ON DUPLICATE KEY UPDATE status='in progress';"
+        try:
+            db, cursor = db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(sql)
+            db.commit()
+            cursor.close()
+            db.close()
+            subprocess.Popen(f"python3 crawler.py {group}",shell=True)
+            return redirect(url_for('crawler',group=group))
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
+        
+        
