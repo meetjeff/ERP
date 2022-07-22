@@ -69,10 +69,10 @@ class Punch(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip
-            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`{par['group']}` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(max(timestamp)),@@session.time_zone,'+8:00'),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            FROM punch.`{par['group']}` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
             AS pun using(date,name)
             {query} ORDER BY date DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
         """
@@ -159,10 +159,10 @@ class Count(MethodResource):
             FROM 
             ((SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip 
-            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`{par['group']}` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(max(timestamp)),@@session.time_zone,'+8:00'),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname))) 
+            FROM punch.`{par['group']}` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname))) 
             AS pun using (date,name) {query} GROUP BY date WITH ROLLUP;
         """
 
@@ -482,10 +482,10 @@ class Course(MethodResource):
             FROM 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip
-            FROM punch.`info` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
+            FROM punch.`{par['group']}` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(max(timestamp)),@@session.time_zone,'+8:00'),12) outtime,ipaddress outip 
-            FROM punch.`info` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
+            FROM punch.`{par['group']}` where `inout` = 'out' GROUP BY date,fullname) AS b using (date,fullname)) 
             AS pun ON date = pun.date2 AND Name = pun.name2 {query} GROUP BY course;
         """
 
