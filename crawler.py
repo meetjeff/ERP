@@ -4,11 +4,10 @@ from lxml import html
 from googlesearch import search
 import pymysql
 import pandas as pd
-from requests_html import HTMLSession
-from sqlalchemy import create_engine
 import sys
 import logging
 import os
+import re
 
 logging.basicConfig(filename = "craw.log",
                     level = logging.WARNING,
@@ -24,45 +23,8 @@ else:
     logging.info("Savepath provided is correct,saving at %s",str(savepath))
 
 group=sys.argv[1]
-def yt(group):
-    # 資料庫資訊
-    acc = 'erp'
-    pwd = 'erp'
-    ip = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com'
-    db = 'curriculum'
-    engine = create_engine(f'mysql+pymysql://{acc}:{pwd}@{ip}/{db}')
 
-    # 取得課程名稱
-    result = engine.execute(f"SELECT DISTINCT course FROM curriculum.{group} WHERE course not REGEXP'專題|輔導|產品|企業|研討會|典禮';")
-    data = result.fetchall()
-    df = pd.DataFrame(list(data))
-    curriculum = df[0].tolist()
-
-
-    #爬取各個課程的url
-    for query in curriculum:
-        session = HTMLSession()
-        url = f"https://www.youtube.com/results?search_query={query}"
-        response = session.get(url)
-        response.html.render(sleep=1, keep_page = True, scrolldown = 1,timeout=40)
-
-        for i ,links in enumerate(response.html.find('a#video-title')):
-            try:
-                link = next(iter(links.absolute_links))
-
-                #匯入資料
-                sql = f"INSERT INTO curriculum.resource (groups, course, url, content, title) VALUES ('{group}', '{query}', '{link}', 'video', '{query}')"
-                engine.execute(sql)
-                if i == 2:
-                    break
-            except Exception as e:
-                logging.info(e)
-                #印出異常的狀態是甚麼,因此except後面的可以不加(https://steam.oxxostudio.tw/category/python/basic/try-except.html)
-                
-    engine.dispose()
-    logging.info("video finished")
-
-def arc(group):
+def craw(group):
     #連接資料庫
     db = pymysql.connect(host = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com', port = 3306, user = 'erp', passwd = 'erp')
     cursor = db.cursor()
@@ -113,16 +75,31 @@ def arc(group):
                         db.commit()
                     except Exception as e:
                         logging.info(e)
+                        
+        queryv = cur + "youtube"
+        for i in search(queryv, stop = 3, pause = 1.0):
+            if 'https://www.youtube.com/watch?v=' in i:  
+                try:
+                    res = requests.get(i, headers = headers)
+                    res.encoding = res.apparent_encoding #通過res.apparent_encoding屬性指定編碼
+                    html = res.text
+                    soup = bs(html, 'lxml')
+                    url = re.sub("watch\?v=","embed/", i)
+                    sql = f"INSERT INTO curriculum.resource (groups, course, url, content, title) VALUES ('{group}', '{cur}', '{url}', 'video', '{cur}')"
+                    cursor.execute(sql)
+                    db.commit()
+                    
+                except Exception as e:
+                    logging.info(e) 
                     
     db.commit()   
     db.close()
-    logging.info("article finished")
+    logging.info("crawler finished")
     
 
 if __name__ == '__main__':
 
-    yt(group)
-    arc(group)
+    craw(group)
 
     db = pymysql.connect(
         host = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com',
