@@ -108,7 +108,7 @@ class Punch(MethodResource):
 
 
 class Count(MethodResource):
-    @doc(description="每日遲到、早退、缺席、未打卡、出席次數,應出席、出席、缺席時數,及範圍總合", tags=['Count'])
+    @doc(description="每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，及範圍總合", tags=['Count'])
     @use_kwargs(GetCountRequest,location="query")
     def get(self,**kwargs):
         par={
@@ -184,7 +184,7 @@ class Count(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description="每日遲到、早退、缺席、未打卡、出席次數,應出席、出席、缺席時數,及範圍總合", tags=['Count'])
+    @doc(description="每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，及範圍總合", tags=['Count'])
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
         return redirect(url_for('count',**kwargs))
@@ -229,7 +229,7 @@ class Curriculum(MethodResource):
             return sta.failure('參數有誤')
             
 
-    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )", tags = ['Curriculum'])
+    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖 ) 並自動觸發爬蟲", tags = ['Curriculum'])
     @use_kwargs(PostCurriculumRequest,location = "form")
     def post(self,**kwargs):
         group = request.values.get('group')
@@ -400,7 +400,7 @@ class Leave(MethodResource):
 
 
 class Course(MethodResource):
-    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源", tags = ['Course'])
+    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源", tags = ['Course'])
     @use_kwargs(GetCourseRequest,location = "query")
     def get(self,**kwargs):
         par = {
@@ -519,7 +519,7 @@ class Course(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源", tags = ['Course'])
+    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源", tags = ['Course'])
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
         return redirect(url_for('course',**kwargs))
@@ -552,7 +552,7 @@ class Crawler(MethodResource):
             db.close()
             return sta.failure('參數有誤')
 
-    @doc(description = "觸發學習資源爬蟲", tags = ['Crawler'])
+    @doc(description = "手動執行學習資源爬蟲", tags = ['Crawler'])
     @use_kwargs(CrawlerRequest)
     def post(self,**kwargs):
         group= kwargs.get('group')
