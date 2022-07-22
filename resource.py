@@ -421,7 +421,7 @@ class Course(MethodResource):
             SELECT title,url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'article' ORDER BY date DESC LIMIT 3;
         """     
         
-        if {par['course']} is not None:
+        if par['course'] is not None:
             
             try:
                 db, cursor = db_init()
