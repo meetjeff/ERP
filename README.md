@@ -6,7 +6,8 @@
 
 ## /count
 ###### -GET、POST-
-依班級、姓名、當日或當月、日期範圍篩選統計數字 ( 每日遲到、早退、缺席、未打卡、出席數及總合 )
+依班級、姓名、當日或當月、日期範圍篩選統計數字 
+( 每日遲到、早退、缺席、未打卡、出席次數,應出席、出席、缺席時數,及範圍總合 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
@@ -21,33 +22,42 @@
   "data": [
     {
       "absent": 4,
-      "date": "2022-02-15",
-      "excused": 1,
-      "late": 6,
-      "miss": 3,
-      "present": 17
+      "attendancehours": "161.2001",
+      "day": "2022-02-20",
+      "excused": 0,
+      "lackhours": "55.7999",
+      "late": 13,
+      "miss": 2,
+      "regular": 14,
+      "totalhours": "217"
     },
     .
     .
     .
     {
       "absent": 21,
-      "date": "2022-05-26",
+      "attendancehours": "26.4333",
+      "day": "2022-05-26",
       "excused": 1,
-      "late": 2,
+      "lackhours": "159.5667",
+      "late": 5,
       "miss": 4,
-      "present": 3
+      "regular": 3,
+      "totalhours": "186"
     },
     {
       "absent": 787,
-      "date": "total",
-      "excused": 59,
-      "late": 838,
+      "attendancehours": "14604.9996",
+      "day": "total",
+      "excused": 84,
+      "lackhours": "7002.0004",
+      "late": 918,
       "miss": 170,
-      "present": 1494
+      "regular": 1495,
+      "totalhours": "21607"
     }
   ],
-  "datatime": "2022-07-21T16:07:34.644939",
+  "datatime": "2022-07-22T05:41:36.720744",
   "message": "success"
 }
 ```  
@@ -55,7 +65,7 @@
 ## /course
 ###### -GET、POST-
 依班級、姓名、當日或當月、日期範圍、進行狀態篩選課程  
-( 各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、當日課程學習資源 )
+( 各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
@@ -64,6 +74,7 @@
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
 * status　　&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
+* course　　&thinsp;( 課程名稱 )
 
 **Success Example**
 ```yaml
@@ -81,28 +92,6 @@
         "totalhours": "217"
       }
     ],
-    "resource": {
-      "article": [
-        {
-          "course": "JS與Node.js",
-          "url": "https://tw.alphacamp.co/blog/node-js-and-javascript"
-        },
-        {
-          "course": "個人網頁專題製作",
-          "url": "http://120.105.184.250/hsiaoling/teaches-Study.htm"
-        }
-      ],
-      "video": [
-        {
-          "course": "JS與Node.js",
-          "url": "https://www.youtube.com/watch?v=RpMVP52YQRQ"
-        },
-        {
-          "course": "個人網頁專題製作",
-          "url": "https://www.youtube.com/watch?v=CLUPkcLQm64&t=2622s"
-        }
-      ]
-    },
     "total": [
       {
         "progress": 34,
@@ -115,7 +104,39 @@
   "message": "success"
 }
 ```  
-
+```yaml
+{
+  "data": {
+    "article": [
+      {
+        "title": "ubuntu 基礎架站 - Alvin Chen Club",
+        "url": "http://www.alvinchen.club/2018/04/12/ubuntu-%E5%9F%BA%E7%A4%8E%E6%9E%B6%E7%AB%99/"
+      },
+      {
+        "title": "鳥哥私房菜 - 第一章、架設伺服器前的準備工作",
+        "url": "https://linux.vbird.org/linux_server/centos6/0105beforeserver.php"
+      },
+      {
+        "title": "ubuntu 基礎架站 - Alvin Chen Club",
+        "url": "http://www.alvinchen.club/2018/04/12/ubuntu-%E5%9F%BA%E7%A4%8E%E6%9E%B6%E7%AB%99/"
+      }
+    ],
+    "video": [
+      {
+        "url": "https://www.youtube.com/watch?v=m7meyDFDGMo"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=lDwTVM6Z16M"
+      },
+      {
+        "url": "https://www.youtube.com/watch?v=1YVzfiJeM78"
+      }
+    ]
+  },
+  "datatime": "2022-07-22T05:57:55.438580",
+  "message": "success"
+}
+```
 ## /curriculum
 ###### -GET-
 依班級、月份篩選課表 ( 日期、時段、課程、時數、教室 )
@@ -152,7 +173,7 @@
 ```
 
 ###### -POST-
-依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )
+依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 ),上傳成功後觸發學習資源爬蟲
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
@@ -202,14 +223,14 @@
 {
   "data": [
     {
-      "date": "Tue, 29 Mar 2022 00:00:00 GMT",
+      "date": "2022-03-29",
       "name": "Mia",
       "reason": "驗PCR\r\n",
       "time": "上午 9:00 ~ 12:00",
       "type": "特殊原因"
     },
     {
-      "date": "Tue, 29 Mar 2022 00:00:00 GMT",
+      "date": "2022-03-29",
       "name": "Peter",
       "reason": "no reason",
       "time": "下午 13:30~ 課程結束",
@@ -307,5 +328,32 @@
   },
   "datatime": "2022-07-11T10:28:51.722611",
   "message": "success"
+}
+```
+
+## /crawler
+###### -GET-
+查看學習資源爬蟲執行狀態
+
+**Input Parameters  ( group必填 ) :**
+* group　　&thinsp;( 班級，e.g., fn101 )
+
+**Success Example**
+```yaml
+{
+  "status": "finished"
+}
+```
+
+###### -POST-
+手動執行學習資源爬蟲 ( 課表上傳成功會自動觸發 )
+
+**Input Parameters  ( group必填 ) :**
+* group　　&thinsp;( 班級，e.g., fn101 )
+
+**Success Example**
+```yaml
+{
+  "status": "in progress"
 }
 ```
