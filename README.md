@@ -6,7 +6,7 @@
 
 ## /count
 ###### -GET、POST-
-依班級、姓名、當日或當月、日期範圍篩選統計數字 
+依班級、姓名、當日或當月、日期範圍篩選統計數字 　　
 ( 每日遲到、早退、缺席、未打卡、出席次數,應出席、出席、缺席時數,及範圍總合 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
@@ -74,7 +74,7 @@
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
 * status　　&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
-* course　　&thinsp;( 課程名稱 )
+* course　　( 課程名稱 )
 
 **Success Example**
 ```yaml
@@ -173,7 +173,8 @@
 ```
 
 ###### -POST-
-依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 ),上傳成功後觸發學習資源爬蟲
+依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )　　
+上傳成功後觸發學習資源爬蟲
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
