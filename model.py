@@ -16,6 +16,7 @@ class GetCourseRequest(Schema):
     startdate = fields.Date(doc = "startdate")
     stopdate = fields.Date(doc = "stopdate")
     status = fields.Str(doc = "status")
+    course = fields.Str(doc = "course")
 
 class GetCountRequest(Schema):
     group = fields.Str(doc = "group", required = True)
