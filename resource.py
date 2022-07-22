@@ -409,8 +409,40 @@ class Course(MethodResource):
             'cur' : kwargs.get('cur'),
             'startdate': kwargs.get('startdate'),
             'stopdate': kwargs.get('stopdate'),
-            'status': kwargs.get('status')
+            'status': kwargs.get('status'),
+            'course': kwargs.get('course')
         }
+        
+        videos = f"""
+            SELECT url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'video' ORDER BY date DESC LIMIT 3;
+        """
+
+        articles = f"""
+            SELECT title,url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'article' ORDER BY date DESC LIMIT 3;
+        """     
+        
+        if {par['course']} is not None:
+            
+            try:
+                db, cursor = db_init()
+            except:
+                return sta.failure('資料庫連線失敗')
+
+            try:
+                cursor.execute(videos)
+                video = cursor.fetchall()
+                cursor.execute(articles)
+                article = cursor.fetchall()
+                data = {'video':video,'article':article}
+                db.commit()
+                cursor.close()
+                db.close()
+                return sta.success(data)
+
+            except:
+                cursor.close()
+                db.close()
+                return sta.failure('參數有誤')
 
         query = ""
         if par['name'] is not None:
@@ -465,16 +497,6 @@ class Course(MethodResource):
             FROM curriculum.`{par['group']}`;
         """
 
-        videos = f"""
-            SELECT course,url FROM curriculum.`resource` WHERE course IN (SELECT DISTINCT(course)
-            FROM curriculum.`{par['group']}` WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) = curdate()) AND content = 'video';
-        """
-
-        articles = f"""
-            SELECT course,title,url FROM curriculum.`resource` WHERE course IN (SELECT DISTINCT(course)
-            FROM curriculum.`{par['group']}` WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) = curdate()) AND content = 'article';
-        """
-
         try:
             db, cursor = db_init()
         except:
@@ -485,12 +507,7 @@ class Course(MethodResource):
             course = cursor.fetchall()
             cursor.execute(totals)
             total = cursor.fetchall()
-            cursor.execute(videos)
-            video = cursor.fetchall()
-            cursor.execute(articles)
-            article = cursor.fetchall()
-            resource = {'video':video,'article':article}
-            data={'course':course,'total':total,'resource':resource}
+            data={'course':course,'total':total}
             db.commit()
             cursor.close()
             db.close()
