@@ -556,18 +556,22 @@ class Crawler(MethodResource):
     @use_kwargs(CrawlerRequest)
     def post(self,**kwargs):
         group= kwargs.get('group')
-        sql = f"INSERT INTO curriculum.crawlerstatus (groups, status) VALUES('{group}', 'in progress') ON DUPLICATE KEY UPDATE status='in progress';"
+        sql = f"""
+            INSERT INTO curriculum.crawlerstatus (groups,videos,articles) VALUES('{group}','in progress','in progress') 
+            ON DUPLICATE KEY UPDATE videos='in progress',articles='in progress';
+        """
         try:
             db, cursor = db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
         try:
+            subprocess.Popen(f"python3 video.py {group}",shell=True)
+            subprocess.Popen(f"python3 article.py {group}",shell=True)
             cursor.execute(sql)
             db.commit()
             cursor.close()
             db.close()
-            subprocess.Popen(f"python3 crawler.py {group}",shell=True)
             return redirect(url_for('crawler',group=group))
         except:
             cursor.close()
