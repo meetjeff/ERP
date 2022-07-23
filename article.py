@@ -8,6 +8,7 @@ import sys
 import logging
 import os
 import re
+import time,random
 
 logging.basicConfig(filename = "article.log",
                     level = logging.DEBUG,
@@ -48,6 +49,7 @@ for cur in list_of_curriculum:
                     res1.encoding = res1.apparent_encoding #通過res1.apparent_encoding屬性指定編碼
                     html = res1.text
                     soup = bs(html, 'lxml')
+                    time.sleep(random.uniform(1, 2))
                     if 'ithelp' in i:  #因為it邦幫忙的標題格式長得特別不一樣，又常常是搜尋結果，固有另外拉出來做處理
                         search_t = soup.find('h2')
                         search_title = search_t.text
@@ -74,7 +76,8 @@ for cur in list_of_curriculum:
                        
     except Exception as e:
         logging.info(e)
-
+    
+    time.sleep(random.uniform(1, 2))
     
 fin = f"INSERT INTO curriculum.crawlerstatus (groups,articles) VALUES('{group}','finished') ON DUPLICATE KEY UPDATE videos=videos,articles='finished';"
 cursor.execute(fin)
