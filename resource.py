@@ -421,11 +421,11 @@ class Course(MethodResource):
         }
         
         videos = f"""
-            SELECT url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'video' ORDER BY date DESC LIMIT 3;
+            SELECT DISTINCT url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'video' ORDER BY date DESC LIMIT 3;
         """
 
         articles = f"""
-            SELECT title,url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'article' ORDER BY date DESC LIMIT 3;
+            SELECT DISTINCT title,url FROM curriculum.`resource` WHERE course = '{par['course']}' AND content = 'article' ORDER BY date DESC LIMIT 3;
         """     
         
         if par['course'] is not None:
