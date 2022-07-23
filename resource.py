@@ -282,7 +282,7 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            crawler = requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"})
+            crawler = requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"}).json()
             return redirect(url_for('curriculum',group = group,crawler = crawler))
         except:
             cursor.close()
