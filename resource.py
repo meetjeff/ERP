@@ -196,7 +196,8 @@ class Curriculum(MethodResource):
     def get(self,**kwargs):
         par = {
             'group': kwargs.get('group'),
-            'month': kwargs.get('month')
+            'month': kwargs.get('month'),
+            'crawler': kwargs.get('crawler')
         }
 
         query = ""
@@ -222,6 +223,8 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
+            if par['crawler'] is not None:
+                data = {'curriculum': data,'crawlerstatus': par['crawler']}
             return sta.success(data)
         except:
             cursor.close()
@@ -279,8 +282,8 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"})
-            return redirect(url_for('curriculum',group = group))
+            crawler = requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"})
+            return redirect(url_for('curriculum',group = group,crawler = crawler))
         except:
             cursor.close()
             db.close()
