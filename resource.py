@@ -19,10 +19,10 @@ def db_init():
     return db, cursor
 
 class Punch(MethodResource):
-    @doc(description="出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags=['Punch'])
+    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
     @use_kwargs(GetPunchRequest,location="query")
     def get(self,**kwargs):        
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -33,7 +33,7 @@ class Punch(MethodResource):
             'page' : kwargs.get('page',1)
         }
 
-        query='WHERE date <= curdate()'
+        query = 'WHERE date <= curdate()'
         if par['name'] is not None:
             query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
@@ -77,7 +77,7 @@ class Punch(MethodResource):
             {query} ORDER BY date DESC LIMIT {(par['page']-1)*par['rows']},{par['rows']};
         """
 
-        paging=f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
+        paging = f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
 
         try:
             db, cursor = db_init()
@@ -89,7 +89,7 @@ class Punch(MethodResource):
             punch = cursor.fetchall()
             cursor.execute(paging)
             pagination = cursor.fetchall()
-            data={'punch':punch,'pagination':pagination}
+            data = {'punch':punch,'pagination':pagination}
             db.commit()
             cursor.close()
             db.close()
@@ -100,17 +100,17 @@ class Punch(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description="出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags=['Punch'])
+    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
     @use_kwargs(GetPunchRequest)
     def post(self,**kwargs):        
         return redirect(url_for('punch',**kwargs))
 
 
 class Count(MethodResource):
-    @doc(description="每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags=['Count'])
+    @doc(description = "每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags = ['Count'])
     @use_kwargs(GetCountRequest,location="query")
     def get(self,**kwargs):
-        par={
+        par = {
             'group': kwargs.get('group'),
             'name': kwargs.get('name'),
             'cur' : kwargs.get('cur'),
@@ -118,7 +118,7 @@ class Count(MethodResource):
             'stopdate': kwargs.get('stopdate')
         }
 
-        query='WHERE date <= curdate()'
+        query = 'WHERE date <= curdate()'
         if par['name'] is not None:
             query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
@@ -183,7 +183,7 @@ class Count(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description="每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags=['Count'])
+    @doc(description = "每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags = ['Count'])
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
         return redirect(url_for('count',**kwargs))
@@ -513,7 +513,7 @@ class Course(MethodResource):
             course = cursor.fetchall()
             cursor.execute(totals)
             total = cursor.fetchall()
-            data={'course':course,'total':total}
+            data = {'course':course,'total':total}
             db.commit()
             cursor.close()
             db.close()
@@ -535,9 +535,9 @@ class Crawler(MethodResource):
     @doc(description = "查詢學習資源爬蟲狀態", tags = ['Crawler'])
     @use_kwargs(CrawlerRequest,location="query")
     def get(self,**kwargs):
-        group= kwargs.get('group')
+        group = kwargs.get('group')
 
-        sql = f"SELECT * FROM curriculum.`crawlerstatus` WHERE groups='{group}';"
+        sql = f"SELECT * FROM curriculum.`crawlerstatus` WHERE groups = '{group}';"
 
         try:
             db, cursor = db_init()
@@ -561,10 +561,10 @@ class Crawler(MethodResource):
     @doc(description = "手動執行學習資源爬蟲", tags = ['Crawler'])
     @use_kwargs(CrawlerRequest)
     def post(self,**kwargs):
-        group= kwargs.get('group')
+        group = kwargs.get('group')
         sql = f"""
             INSERT INTO curriculum.crawlerstatus (groups,videos,articles) VALUES('{group}','in progress','in progress') 
-            ON DUPLICATE KEY UPDATE videos='in progress',articles='in progress',date=CURRENT_TIMESTAMP;
+            ON DUPLICATE KEY UPDATE videos = 'in progress',articles = 'in progress',date = CURRENT_TIMESTAMP;
         """
         try:
             db, cursor = db_init()
