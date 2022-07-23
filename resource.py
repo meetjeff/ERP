@@ -558,7 +558,7 @@ class Crawler(MethodResource):
         group= kwargs.get('group')
         sql = f"""
             INSERT INTO curriculum.crawlerstatus (groups,videos,articles) VALUES('{group}','in progress','in progress') 
-            ON DUPLICATE KEY UPDATE videos='in progress',articles='in progress';
+            ON DUPLICATE KEY UPDATE videos='in progress',articles='in progress',date=CURRENT_TIMESTAMP;
         """
         try:
             db, cursor = db_init()
