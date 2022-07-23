@@ -531,7 +531,7 @@ class Crawler(MethodResource):
     def get(self,**kwargs):
         group= kwargs.get('group')
 
-        sql = f"SELECT status FROM curriculum.`crawlerstatus` WHERE groups='{group}';"
+        sql = f"SELECT * FROM curriculum.`crawlerstatus` WHERE groups='{group}';"
 
         try:
             db, cursor = db_init()
