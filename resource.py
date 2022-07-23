@@ -197,12 +197,12 @@ class Curriculum(MethodResource):
         par = {
             'group': kwargs.get('group'),
             'month': kwargs.get('month'),
-            'crawler': kwargs.get('crawler')
+            'crawler': request.values.get('crawler')
         }
 
         query = ""
         if par['month'] is not None:
-            query = f"WHERE date LIKE '{par['month']}%'"
+            query = f"WHERE CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) LIKE '{par['month']}%'"
         
         sql = f"""
             SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
