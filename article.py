@@ -79,7 +79,7 @@ for cur in list_of_curriculum:
     
     time.sleep(random.uniform(1, 2))
     
-fin = f"INSERT INTO curriculum.crawlerstatus (groups,articles) VALUES('{group}','finished') ON DUPLICATE KEY UPDATE videos=videos,articles='finished';"
+fin = f"INSERT INTO curriculum.crawlerstatus (groups,articles) VALUES('{group}','finished') ON DUPLICATE KEY UPDATE videos=videos,articles='finished',date=CURRENT_TIMESTAMP;"
 cursor.execute(fin)
 db.commit()
 cursor.close()   
