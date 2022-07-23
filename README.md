@@ -7,7 +7,7 @@
 ## /count
 ###### -GET、POST-
 依班級、姓名、當日或當月、日期範圍篩選統計數字   
-( 每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，及範圍總合 )
+( 每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數 )
 
 **Input Parameters  ( group必填，其他可選 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
@@ -28,6 +28,7 @@
       "lackhours": "55.7999",
       "late": 13,
       "miss": 2,
+      "number of people": 31,
       "regular": 14,
       "totalhours": "217"
     },
@@ -42,6 +43,7 @@
       "lackhours": "159.5667",
       "late": 5,
       "miss": 4,
+      "number of people": 31,
       "regular": 3,
       "totalhours": "186"
     },
@@ -53,6 +55,7 @@
       "lackhours": "7002.0004",
       "late": 918,
       "miss": 170,
+      "number of people": 31,
       "regular": 1495,
       "totalhours": "21607"
     }
