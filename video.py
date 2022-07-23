@@ -7,6 +7,7 @@ import sys
 import logging
 import os
 import re
+import time,random
 
 logging.basicConfig(filename = "video.log",
                     level = logging.DEBUG,
@@ -39,6 +40,7 @@ for cur1 in list_of_curriculum1:
                 try:
                     res2 = requests.get(i2, headers = headers)
                     res2.encoding = res2.apparent_encoding #通過res.apparent_encoding屬性指定編碼
+                    time.sleep(random.uniform(1, 2))
                     url = re.sub("watch\?v=","embed/", i2)
                     yt = f"INSERT INTO curriculum.resource (groups, course, url, content, title) VALUES ('{group}', '{cur1}', '{url}', 'video', '{cur1}')"
                     cursor1.execute(yt)
@@ -49,6 +51,8 @@ for cur1 in list_of_curriculum1:
                     
     except Exception as e:
         logging.info(e)
+    
+    time.sleep(random.uniform(1, 2))
 
 fin = f"INSERT INTO curriculum.crawlerstatus (groups,videos) VALUES('{group}','finished') ON DUPLICATE KEY UPDATE videos='finished',articles=articles;"
 cursor1.execute(fin)
