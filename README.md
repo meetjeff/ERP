@@ -112,8 +112,8 @@
   "data": {
     "article": [
       {
-        "title": "ubuntu 基礎架站 - Alvin Chen Club",
-        "url": "http://www.alvinchen.club/2018/04/12/ubuntu-%E5%9F%BA%E7%A4%8E%E6%9E%B6%E7%AB%99/"
+        "title": "鳥哥私房菜 - Linux 伺服器篇各年份各版本的學習資料",
+        "url": "https://linux.vbird.org/linux_server/"
       },
       {
         "title": "鳥哥私房菜 - 第一章、架設伺服器前的準備工作",
@@ -126,17 +126,17 @@
     ],
     "video": [
       {
-        "url": "https://www.youtube.com/watch?v=m7meyDFDGMo"
+        "url": "https://www.youtube.com/embed/m7meyDFDGMo"
       },
       {
-        "url": "https://www.youtube.com/watch?v=lDwTVM6Z16M"
+        "url": "https://www.youtube.com/embed/brP8mgNeg0Q"
       },
       {
-        "url": "https://www.youtube.com/watch?v=1YVzfiJeM78"
+        "url": "https://www.youtube.com/embed/BH_2h2ZPVu8"
       }
     ]
   },
-  "datatime": "2022-07-22T05:57:55.438580",
+  "datatime": "2022-07-23T18:42:49.404920",
   "message": "success"
 }
 ```
@@ -183,29 +183,32 @@
 * group　　&thinsp;( 班級，e.g., fn101 )
 * file　　　&thinsp;&thinsp;&thinsp;( 課表csv檔、6欄、utf-8編碼，e.g., 課表.csv )
 
-**Success Example  ( 返回更新後的課表 )**
+**Success Example  ( 返回更新後的課表及爬蟲啟動狀態、時間 )**
 ```yaml
 {
-  "data": [
-    {
-      "classroom": "123",
-      "course": "阿甘正傳",
-      "date": "2021-12-15",
-      "hours": 3,
-      "part": "AM"
-    },
+  "data": {
+    "crawlerstatus": "{'articles': 'in progress', 'date': 'Sat, 23 Jul 2022 18:45:42 GMT', 'groups': 'se102', 'videos': 'in progress'}",
+    "curriculum": [
+      {
+        "classroom": "123",
+        "course": "開訓典禮",
+        "date": "2021-12-15",
+        "hours": 3,
+        "part": "AM"
+      },
     .
     .
     .
-    {
-      "classroom": "123",
-      "course": "產品實做",
-      "date": "2022-05-26",
-      "hours": 3,
-      "part": "PM"
-    }
-  ],
-  "datatime": "2022-07-11T08:06:41.057632",
+      {
+        "classroom": "123",
+        "course": "產品實做",
+        "date": "2022-05-26",
+        "hours": 3,
+        "part": "PM"
+      }
+    ]
+  },
+  "datatime": "2022-07-23T18:45:42.354838",
   "message": "success"
 }
 ```  
@@ -337,7 +340,7 @@
 
 ## /crawler
 ###### -GET-
-查看學習資源爬蟲執行狀態
+查看學習資源爬蟲執行狀態 ( 班級、影片、文章、最後更新時間 )
 
 **Input Parameters  ( group必填 ) :**
 * group　　&thinsp;( 班級，e.g., fn101 )
@@ -345,7 +348,10 @@
 **Success Example**
 ```yaml
 {
-  "status": "finished"
+  "articles": "finished",
+  "date": "Sat, 23 Jul 2022 18:57:53 GMT",
+  "groups": "fn102",
+  "videos": "finished"
 }
 ```
 
@@ -358,6 +364,9 @@
 **Success Example**
 ```yaml
 {
-  "status": "in progress"
+  "articles": "in progress",
+  "date": "Sat, 23 Jul 2022 18:56:09 GMT",
+  "groups": "fn102",
+  "videos": "in progress"
 }
 ```
