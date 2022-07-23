@@ -28,7 +28,6 @@ class GetCountRequest(Schema):
 class GetCurriculumRequest(Schema):
     group = fields.Str(doc = "group", required = True)
     month = fields.Str(doc = "month")
-    crawler = fields.Str(doc = "crawler")
 
 class PostCurriculumRequest(Schema):
     group = fields.Str(doc = "group", required = True)
