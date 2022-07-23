@@ -106,7 +106,8 @@
   "datatime": "2022-07-11T07:52:01.456255",
   "message": "success"
 }
-```  
+```
+**Input course**
 ```yaml
 {
   "data": {
