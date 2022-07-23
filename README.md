@@ -140,7 +140,40 @@
   "datatime": "2022-07-23T18:42:49.404920",
   "message": "success"
 }
+```  
+## /crawler
+###### -GET-
+查看學習資源爬蟲執行狀態 ( 班級、影片、文章、最後更新時間 )
+
+**Input Parameters  ( group必填 ) :**
+* group　　&thinsp;( 班級，e.g., fn101 )
+
+**Success Example**
+```yaml
+{
+  "articles": "finished",
+  "date": "Sat, 23 Jul 2022 18:57:53 GMT",
+  "groups": "fn102",
+  "videos": "finished"
+}
 ```
+
+###### -POST-
+手動執行學習資源爬蟲 ( 課表上傳成功會自動觸發 )
+
+**Input Parameters  ( group必填 ) :**
+* group　　&thinsp;( 班級，e.g., fn101 )
+
+**Success Example**
+```yaml
+{
+  "articles": "in progress",
+  "date": "Sat, 23 Jul 2022 18:56:09 GMT",
+  "groups": "fn102",
+  "videos": "in progress"
+}
+```  
+
 ## /curriculum
 ###### -GET-
 依班級、月份篩選課表 ( 日期、時段、課程、時數、教室 )
@@ -336,38 +369,5 @@
   },
   "datatime": "2022-07-11T10:28:51.722611",
   "message": "success"
-}
-```
-
-## /crawler
-###### -GET-
-查看學習資源爬蟲執行狀態 ( 班級、影片、文章、最後更新時間 )
-
-**Input Parameters  ( group必填 ) :**
-* group　　&thinsp;( 班級，e.g., fn101 )
-
-**Success Example**
-```yaml
-{
-  "articles": "finished",
-  "date": "Sat, 23 Jul 2022 18:57:53 GMT",
-  "groups": "fn102",
-  "videos": "finished"
-}
-```
-
-###### -POST-
-手動執行學習資源爬蟲 ( 課表上傳成功會自動觸發 )
-
-**Input Parameters  ( group必填 ) :**
-* group　　&thinsp;( 班級，e.g., fn101 )
-
-**Success Example**
-```yaml
-{
-  "articles": "in progress",
-  "date": "Sat, 23 Jul 2022 18:56:09 GMT",
-  "groups": "fn102",
-  "videos": "in progress"
 }
 ```
