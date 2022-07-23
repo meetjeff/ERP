@@ -11,7 +11,7 @@ import re
 import time,random
 
 logging.basicConfig(filename = "article.log",
-                    level = logging.DEBUG,
+                    level = logging.INFO,
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
