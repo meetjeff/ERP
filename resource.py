@@ -106,7 +106,6 @@ class Punch(MethodResource):
         return redirect(url_for('punch',**kwargs))
 
 
-
 class Count(MethodResource):
     @doc(description="每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags=['Count'])
     @use_kwargs(GetCountRequest,location="query")
