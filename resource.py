@@ -148,7 +148,7 @@ class Count(MethodResource):
             THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
             WHEN TIMEDIFF(shouldout,outtime) >= 0 
             THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
-            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS lackhours
+            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS lackhours,COUNT(DISTINCT(name)) 'number of people'
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
             str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
