@@ -572,13 +572,13 @@ class Crawler(MethodResource):
             return sta.failure('資料庫連線失敗')
 
         try:
-            subprocess.Popen(f"python3 video.py {group}",shell=True)
-            subprocess.Popen(f"python3 article.py {group}",shell=True)
+            subprocess.Popen(f"python3 video.py {group}",shell = True)
+            subprocess.Popen(f"python3 article.py {group}",shell = True)
             cursor.execute(sql)
             db.commit()
             cursor.close()
             db.close()
-            return redirect(url_for('crawler',group=group))
+            return redirect(url_for('crawler',group = group))
         except:
             cursor.close()
             db.close()
