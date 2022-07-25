@@ -151,7 +151,7 @@
 **Success Example**
 ```yaml
 {
-  "articles": "finished",
+  "articles": "in progress",
   "date": "Sat, 23 Jul 2022 18:57:53 GMT",
   "groups": "fn102",
   "videos": "finished"
