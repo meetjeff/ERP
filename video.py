@@ -8,6 +8,9 @@ import logging
 import os
 import re
 import time,random
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(filename = "video.log",
                     level = logging.INFO,
@@ -24,7 +27,7 @@ else:
 
 group=sys.argv[1]
 headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15'}
-db1 = pymysql.connect(host = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com', port = 3306, user = 'erp', passwd = 'erp')
+db1 = pymysql.connect(host = os.getenv("dbip"), port = int(os.getenv("dbport")), user = os.getenv("dbuser"), passwd = os.getenv("dbpassword"))
 cursor1 = db1.cursor()
 sql1 = f"SELECT DISTINCT course FROM curriculum.{group} WHERE course not REGEXP'專題|輔導|產品|企業|研討會|典禮';" #篩掉部分關鍵字
 cursor1.execute(sql1)
