@@ -7,13 +7,16 @@ from werkzeug.utils import secure_filename
 import os
 import requests,json
 import subprocess
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def db_init():
     db = pymysql.connect(
-        host = 'ec2-34-208-156-155.us-west-2.compute.amazonaws.com',
-        user = 'erp',
-        password = 'erp',
-        port = 3306
+        host = os.getenv("dbip"),
+        user = os.getenv("dbuser"),
+        password = os.getenv("dbpassword"),
+        port = int(os.getenv("dbport"))
     )
     cursor = db.cursor(pymysql.cursors.DictCursor)
     return db, cursor
