@@ -12,12 +12,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-logging.basicConfig(filename = "video.log",
+logging.basicConfig(filename = "/home/ec2-user/video.log",
                     level = logging.INFO,
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
-savepath = "~/video.log"
+savepath = "/home/ec2-user/video.log"
 if not os.path.exists(savepath):
     logging.warning("Warning! The savepath provided doesn\'t exist!Saving at current directory")
     savepath = os.getcwd() 
