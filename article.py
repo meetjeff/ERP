@@ -12,12 +12,12 @@ import time,random
 from dotenv import load_dotenv
 
 load_dotenv()
-logging.basicConfig(filename = "article.log",
+logging.basicConfig(filename = "/home/ec2-user/article.log",
                     level = logging.INFO,
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
-savepath = "~/article.log"
+savepath = "/home/ec2-user/article.log"
 if not os.path.exists(savepath):
     logging.warning("Warning! The savepath provided doesn\'t exist!Saving at current directory")
     savepath = os.getcwd() 
