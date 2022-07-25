@@ -1,5 +1,6 @@
 #sudo pip3 install
 
+python-dotenv
 beautifulsoup4
 requests
 lxml
