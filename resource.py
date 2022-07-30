@@ -12,7 +12,7 @@ import dbcon
 
 class Login(MethodResource):
     @jwt_required()
-    @doc(description = "自動帶入基本資料", tags = ['Getinfo'], params = {
+    @doc(description = "自動帶入基本資料 ( 群組、姓名、ID、Email )", tags = ['Getinfo'], params = {
         'Authorization': {
             'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
             'in':'header',
