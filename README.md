@@ -6,17 +6,48 @@
 
 ## /login
 ###### -GET-
-依班級、姓名、當日或當月、日期範圍篩選統計數字   
-( 每日遲到、早退、缺席、未打卡、請假、出席數，應出席、出席、缺席、請假時數，範圍總合及總人數 )
+自動帶入基本資料 ( 群組、姓名、ID、Email )   
 
 **Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
-* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
-* startdate　( 起始日期，e.g., 2022-01-01 )
-* stopdate　( 結束日期，e.g., 2022-01-01 )
 
 **Success Example**
+```yaml
+{
+  "data": [
+    {
+      "Class": "fn101",
+      "Email": "amy123@gmail.com",
+      "Id": 1,
+      "Name": "Amy"
+    }
+  ],
+  "datatime": "2022-07-30T20:19:20.043527",
+  "message": "success"
+}
+```
+
+###### -POST-
+登入 ( 群組、帳號、密碼 )  
+Return Authorization Bearer Token
+
+**Input Parameters :**
+* group　　&thinsp;( 群組。企業用戶 : ent，管理者 : manager，一般使用者 : 班級，e.g., fn101 )
+* account　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )  
+* password　　( 密碼，區分大小寫，e.g., Jeff123 )
+
+**Success Example**  
+```yaml
+{
+  "data": {
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY1OTIxMzM5NiwianRpIjoiNmZlNmMzYmQtMTc5YS00YmY1LTg0N2EtYjM0ZWJlMjUxYjgzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6W3siQWNjZXNzIjoiMSIsIkNsYXNzIjoiZm4xMDEiLCJOYW1lIjoiQW15In1dLCJuYmYiOjE2NTkyMTMzOTYsImV4cCI6MTY1OTIxNjk5Nn0.UhUCdVkuCfTVjxtfWhnFjL8S6lSQWsU5n2U3XgAh8VM",
+    "message": "Welcome Amy"
+  },
+  "datatime": "2022-07-30T20:36:36.432231",
+  "message": "success"
+}
+```
 
 ## /count
 ###### -GET、POST-
@@ -26,7 +57,7 @@
 **Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
-* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月。當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
 
@@ -93,10 +124,10 @@
 **Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
-* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月。當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
-* status　　&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
+* status　　&thinsp;( 課程狀態。已進行 : progress，未開始 : unfinished )
 * course　　( 課程名稱，獲取該課程學習資源 )
 
 **Success Example**
@@ -161,6 +192,7 @@
   "message": "success"
 }
 ```  
+
 ## /crawler
 ###### -GET-
 查看學習資源爬蟲執行狀態 ( 班級、影片、文章、最後更新時間 )
@@ -274,7 +306,7 @@
 **Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
-* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月。當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
 * leavetype &thinsp;&thinsp;( 假別，e.g., 病假 )
@@ -346,10 +378,10 @@
 **Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
-* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月。當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
-* status　　&thinsp;&thinsp;( 打卡狀態，遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss )
+* status　　&thinsp;&thinsp;( 打卡狀態。遲到 : late，早退 : excused，缺席 : absent，未打卡 : miss )
 * rows　　　( 單頁顯示筆數，預設30，e.g., 100 )
 * page　　　( 第幾頁，預設1，e.g., 20 )
 
