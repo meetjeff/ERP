@@ -4,6 +4,20 @@
 ###### -GET-
 **api documentation**  
 
+## /login
+###### -GET-
+依班級、姓名、當日或當月、日期範圍篩選統計數字   
+( 每日遲到、早退、缺席、未打卡、請假、出席數，應出席、出席、缺席、請假時數，範圍總合及總人數 )
+
+**Input Parameters :**
+* group　　&thinsp;( 班級，e.g., fn101 )
+* name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
+* cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
+* startdate　( 起始日期，e.g., 2022-01-01 )
+* stopdate　( 結束日期，e.g., 2022-01-01 )
+
+**Success Example**
+
 ## /count
 ###### -GET、POST-
 依班級、姓名、當日或當月、日期範圍篩選統計數字   
