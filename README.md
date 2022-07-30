@@ -7,9 +7,9 @@
 ## /count
 ###### -GET、POST-
 依班級、姓名、當日或當月、日期範圍篩選統計數字   
-( 每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數 )
+( 每日遲到、早退、缺席、未打卡、請假、出席數，應出席、出席、缺席、請假時數，範圍總合及總人數 )
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
@@ -21,43 +21,49 @@
 {
   "data": [
     {
-      "absent": 4,
-      "attendancehours": "161.2001",
-      "day": "2022-02-20",
-      "excused": 0,
-      "lackhours": "55.7999",
-      "late": 13,
-      "miss": 2,
+      "absent": 5,
+      "attendancehours": "190.5832",
+      "day": "2022-04-11",
+      "excused": 2,
+      "lackhours": "72.9168",
+      "late": 11,
+      "leave": 1,
+      "leavehours": "8.5000",
+      "miss": 3,
       "number of people": 31,
-      "regular": 14,
-      "totalhours": "217"
+      "regular": 13,
+      "totalhours": "263.5000"
     },
     .
     .
     .
     {
       "absent": 21,
-      "attendancehours": "26.4333",
+      "attendancehours": "33.9333",
       "day": "2022-05-26",
       "excused": 1,
-      "lackhours": "159.5667",
+      "lackhours": "198.5667",
       "late": 5,
+      "leave": 0,
+      "leavehours": "0.0000",
       "miss": 4,
       "number of people": 31,
       "regular": 3,
-      "totalhours": "186"
+      "totalhours": "232.5000"
     },
     {
-      "absent": 787,
-      "attendancehours": "14604.9996",
+      "absent": 864,
+      "attendancehours": "17547.1662",
       "day": "total",
-      "excused": 84,
-      "lackhours": "7002.0004",
-      "late": 918,
-      "miss": 170,
+      "excused": 113,
+      "lackhours": "8996.3338",
+      "late": 872,
+      "leave": 29,
+      "leavehours": "145.5000",
+      "miss": 166,
       "number of people": 31,
-      "regular": 1495,
-      "totalhours": "21607"
+      "regular": 1444,
+      "totalhours": "26543.5000"
     }
   ],
   "datatime": "2022-07-22T05:41:36.720744",
@@ -70,14 +76,14 @@
 依班級、姓名、當日或當月、日期範圍、進行狀態篩選課程  
 ( 各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源 )
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
 * startdate　( 起始日期，e.g., 2022-01-01 )
 * stopdate　( 結束日期，e.g., 2022-01-01 )
 * status　　&thinsp;( 課程狀態，已進行 : progress，未開始 : unfinished )
-* course　　( 課程名稱 )
+* course　　( 課程名稱，獲取該課程學習資源 )
 
 **Success Example**
 ```yaml
@@ -178,7 +184,7 @@
 ###### -GET-
 依班級、月份篩選課表 ( 日期、時段、課程、時數、教室 )
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * month　　( 月份，e.g., 2022-04 )
 
