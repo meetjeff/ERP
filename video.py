@@ -12,12 +12,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-logging.basicConfig(filename = "/home/ec2-user/video.log",
+logging.basicConfig(filename = os.getenv("videolog"),
                     level = logging.INFO,
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
-savepath = "/home/ec2-user/video.log"
+savepath = os.getenv("videolog")
 if not os.path.exists(savepath):
     logging.warning("Warning! The savepath provided doesn\'t exist!Saving at current directory")
     savepath = os.getcwd() 
@@ -38,7 +38,7 @@ list_of_curriculum1 = df1[0].tolist()
 for cur1 in list_of_curriculum1:                    
     queryv = cur1 + "youtube"
     try:
-        for i2 in search(queryv, stop = 3, pause = 1.0):
+        for i2 in search(queryv, stop = int(os.getenv("search")), pause = 1.0):
             if 'https://www.youtube.com/watch?v=' in i2:  
                 try:
                     res2 = requests.get(i2, headers = headers)
