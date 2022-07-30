@@ -218,12 +218,10 @@ class Count(MethodResource):
             WHEN TIMEDIFF(shouldout,outtime) >= 0 
             THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60-HOUR(TIMEDIFF(shouldout,outtime))-MINUTE(TIMEDIFF(shouldout,outtime))/60 
             ELSE (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60 END) AS lackhours,
-            SUM(CASE WHEN INSTR(time,'整天') THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60 WHEN time IS NULL THEN 0 ELSE 
-            HOUR(TIMEDIFF(REPLACE(SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',-1),'課程結束',shouldout),
-            SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',1)))+
-            MINUTE(TIMEDIFF(REPLACE(SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',-1),'課程結束',shouldout),
-            SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',1)))/60 END) AS leavehours,
-            COUNT(DISTINCT(name)) 'number of people'
+            SUM(CASE WHEN INSTR(time,'整天') THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60 WHEN INSTR(time,'~') THEN  
+            TIMESTAMPDIFF(MINUTE,STR_TO_DATE(SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',1),'%H:%i'),
+            STR_TO_DATE(REPLACE(SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',-1),'課程結束',shouldout),'%H:%i')
+            )/60 ELSE 0 END) AS leavehours,COUNT(DISTINCT(name)) 'number of people'
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
             min(str_to_date(CONCAT(starthour,':',startminute+1,':00'),'%H:%i:%s')) shouldin,
@@ -307,8 +305,8 @@ class Curriculum(MethodResource):
         sql = f"""
             SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
             CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',course,
-            TIMESTAMPDIFF(HOUR,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
-            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s')) hours,
+            TIMESTAMPDIFF(MINUTE,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
+            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))/60 hours,
             '123' classroom FROM curriculum.`{par['group']}` {query};
         """
 
