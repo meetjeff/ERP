@@ -37,6 +37,10 @@ class GetLeaveRequest(Schema):
     stopdate = fields.Date(doc = "stopdate")
     leavetype = fields.Str(doc = "leavetype")
 
+class Getinfo(Schema):
+    group = fields.Str(doc = "group")
+    name = fields.Str(doc = "name")
+
 class PostFileRequest(Schema):
     group = fields.Str(doc = "group", required = True)
     file = fields.Raw(type = 'file',doc = "file")
