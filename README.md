@@ -33,9 +33,9 @@
 Return Authorization Bearer Token
 
 **Input Parameters :**
-* group　　&thinsp;( 群組。企業用戶 : ent，管理者 : manager，一般使用者 : 班級，e.g., fn101 )
+* group　　　&thinsp;( 群組。企業用戶 : ent，管理者 : manager，一般使用者 : 班級，e.g., fn101 )
 * account　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )  
-* password　　( 密碼，區分大小寫，e.g., Jeff123 )
+* password　&thinsp;&thinsp;( 密碼，區分大小寫，e.g., Jeff123 )
 
 **Success Example**  
 ```yaml
