@@ -9,6 +9,7 @@ import requests
 import subprocess
 from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
 import dbcon
+from dotenv import load_dotenv
 
 class Login(MethodResource):
     @jwt_required()
@@ -433,7 +434,11 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            cra = requests.post("http://54.186.56.114/crawler", json = {"group":f"{group}"})
+            load_dotenv()
+            trigger = os.getenv("crawlertrigger")
+            data = {"group":f"{group}"}
+            token = {'Authorization': request.headers.get('Authorization')}
+            cra = requests.post(trigger, json = data, headers = token)
             try:
                 crawler = cra.json()
             except:
