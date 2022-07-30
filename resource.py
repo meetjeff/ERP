@@ -1,33 +1,74 @@
-import pymysql
 from flask_apispec import doc,use_kwargs,MethodResource
-from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,PostCurriculumRequest,GetLeaveRequest,CrawlerRequest
+from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,GetLeaveRequest
+from model import PostFileRequest,CrawlerRequest,LoginRequest
 import sta
-from flask import request, redirect, url_for
+from flask import request,redirect,url_for
 from werkzeug.utils import secure_filename
 import os
-import requests,json
+import requests
 import subprocess
-from dotenv import load_dotenv
+from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
+import dbcon
 
-load_dotenv()
+class Login(MethodResource):
+    @doc(description = "登入 ( 群組、帳號、密碼 )", tags = ['Login'])
+    @use_kwargs(LoginRequest)
+    def post(self,**kwargs):
+        group = kwargs.get("group")
+        account = kwargs.get("account")
+        password = kwargs.get("password")
+        sql = f"SELECT Access,Class,Name FROM personal_data.{group} WHERE LOWER(Name) = LOWER('{account}') AND Password = '{password}';"
+        
+        try:
+            db, cursor = dbcon.db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
 
-def db_init():
-    db = pymysql.connect(
-        host = os.getenv("dbip"),
-        user = os.getenv("dbuser"),
-        password = os.getenv("dbpassword"),
-        port = int(os.getenv("dbport"))
-    )
-    cursor = db.cursor(pymysql.cursors.DictCursor)
-    return db, cursor
+        try:
+            cursor.execute(sql)
+            user = cursor.fetchall()
+            cursor.close()
+            db.close()
+
+            if user != ():
+                access_token = create_access_token(identity=user)
+                data = {
+                    "message": f"Welcome {user[0]['Name']}",
+                    "access_token": access_token}
+                return sta.success(data)
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
+            
+        return sta.failure("Account or password is wrong")
+
 
 class Punch(MethodResource):
-    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
-    @use_kwargs(GetPunchRequest,location="query")
-    def get(self,**kwargs):        
+    @jwt_required()
+    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
+    @use_kwargs(GetPunchRequest,location = "query")
+    def get(self,**kwargs):
+        identity = get_jwt_identity()
+        if str(identity[0]['Access']) == '1':
+            group = identity[0]['Class']
+            name = identity[0]['Name']
+        if str(identity[0]['Access']) in ['2','3']:
+            group = kwargs.get("group")
+            name = kwargs.get("name")
+        if str(identity[0]['Access']) not in ['1','2','3']:
+            return sta.failure('權限不足')
+
         par = {
-            'group': kwargs.get('group'),
-            'name': kwargs.get('name'),
+            'group': group,
+            'name': name,
             'cur' : kwargs.get('cur'),
             'startdate': kwargs.get('startdate'),
             'stopdate': kwargs.get('stopdate'),
@@ -64,8 +105,8 @@ class Punch(MethodResource):
             WHEN outtime <= shouldout THEN 'excused' ELSE 'regular' END AS 'status' 
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
-            str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
-            str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
+            min(str_to_date(CONCAT(starthour,':',startminute+1,':00'),'%H:%i:%s')) shouldin,
+            max(str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s')) shouldout 
             FROM curriculum.`{par['group']}` GROUP BY date) AS curr join 
             (SELECT Name name FROM personal_data.`{par['group']}`) AS person left join 
             (SELECT a.date date,a.fullname name,intime,outtime,inip,outip 
@@ -83,7 +124,7 @@ class Punch(MethodResource):
         paging = f"SELECT FOUND_ROWS() totalrows,CEILING(FOUND_ROWS()/{par['rows']}) totalpages;"
 
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -103,19 +144,45 @@ class Punch(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'])
+    @jwt_required()
+    @doc(description = "出缺勤列表 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )", tags = ['Punch'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(GetPunchRequest)
     def post(self,**kwargs):        
         return redirect(url_for('punch',**kwargs))
 
 
 class Count(MethodResource):
-    @doc(description = "每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags = ['Count'])
-    @use_kwargs(GetCountRequest,location="query")
+    @jwt_required()
+    @doc(description = "每日遲到、早退、缺席、未打卡、請假、出席數，應出席、出席、缺席、請假時數，範圍總合及總人數", tags = ['Count'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
+    @use_kwargs(GetCountRequest,location = "query")
     def get(self,**kwargs):
+        identity = get_jwt_identity()
+        if str(identity[0]['Access']) == '1':
+            group = identity[0]['Class']
+            name = identity[0]['Name']
+        if str(identity[0]['Access']) in ['2','3']:
+            group = kwargs.get("group")
+            name = kwargs.get("name")
+        if str(identity[0]['Access']) not in ['1','2','3']:
+            return sta.failure('權限不足')
+
         par = {
-            'group': kwargs.get('group'),
-            'name': kwargs.get('name'),
+            'group': group,
+            'name': name,
             'cur' : kwargs.get('cur'),
             'startdate': kwargs.get('startdate'),
             'stopdate': kwargs.get('stopdate')
@@ -136,27 +203,34 @@ class Count(MethodResource):
         sql = f"""
             SELECT COALESCE(date,'total') day,COUNT(intime >= shouldin OR NULL) late,COUNT(outtime <= shouldout OR NULL) excused,
             COUNT(intime IS NULL OR NULL) absent,COUNT(outtime IS NULL AND intime IS NOT NULL OR NULL) miss,
-            COUNT(outtime >= shouldout AND intime <= shouldin OR NULL) regular,
-            SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout)) totalhours,
+            COUNT(outtime >= shouldout AND intime <= shouldin OR NULL) regular,COUNT(time IS NOT NULL OR NULL) 'leave',
+            SUM((TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60) totalhours,
             SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
             WHEN TIMEDIFF(shouldin,intime) <= 0 
-            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
+            THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60-HOUR(TIMEDIFF(shouldin,intime))-MINUTE(TIMEDIFF(shouldin,intime))/60 
             WHEN TIMEDIFF(shouldout,outtime) >= 0 
-            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
-            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS attendancehours,
-            SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout))-
-            SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
+            THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60-HOUR(TIMEDIFF(shouldout,outtime))-MINUTE(TIMEDIFF(shouldout,outtime))/60 
+            ELSE (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60 END) AS attendancehours,
+            SUM((TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60-
+            CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
             WHEN TIMEDIFF(shouldin,intime) <= 0 
-            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
+            THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60-HOUR(TIMEDIFF(shouldin,intime))-MINUTE(TIMEDIFF(shouldin,intime))/60 
             WHEN TIMEDIFF(shouldout,outtime) >= 0 
-            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
-            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS lackhours,COUNT(DISTINCT(name)) 'number of people'
+            THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60-HOUR(TIMEDIFF(shouldout,outtime))-MINUTE(TIMEDIFF(shouldout,outtime))/60 
+            ELSE (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60 END) AS lackhours,
+            SUM(CASE WHEN INSTR(time,'整天') THEN (TIMESTAMPDIFF(MINUTE,shouldin,shouldout)+1)/60 WHEN time IS NULL THEN 0 ELSE 
+            HOUR(TIMEDIFF(REPLACE(SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',-1),'課程結束',shouldout),
+            SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',1)))+
+            MINUTE(TIMEDIFF(REPLACE(SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',-1),'課程結束',shouldout),
+            SUBSTRING_INDEX(REPLACE(REPLACE(REPLACE(time,'上午',''),'下午',''),' ',''),'~',1)))/60 END) AS leavehours,
+            COUNT(DISTINCT(name)) 'number of people'
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
-            str_to_date(CONCAT(min(starthour),':',startminute+1,':00'),'%H:%i:%s') shouldin,
-            str_to_date(CONCAT(max(stophour),':',stopminute,':00'),'%H:%i:%s') shouldout 
+            min(str_to_date(CONCAT(starthour,':',startminute+1,':00'),'%H:%i:%s')) shouldin,
+            max(str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s')) shouldout 
             FROM curriculum.`{par['group']}` GROUP BY date) AS curr join 
             (SELECT Name name FROM personal_data.`{par['group']}`) AS person left join 
+            (SELECT date,name,time FROM leavelist.`{par['group']}`) AS leavetime using(date,name) left join 
             (SELECT a.date date,a.fullname name,intime,outtime,inip,outip 
             FROM 
             ((SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
@@ -169,7 +243,7 @@ class Count(MethodResource):
         """
 
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -186,18 +260,42 @@ class Count(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "每日遲到、早退、缺席、未打卡、出席次數，應出席、出席、缺席時數，範圍總合及總人數", tags = ['Count'])
+    @jwt_required()
+    @doc(description = "每日遲到、早退、缺席、未打卡、請假、出席數，應出席、出席、缺席、請假時數，範圍總合及總人數", tags = ['Count'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(GetCountRequest)
     def post(self,**kwargs):
         return redirect(url_for('count',**kwargs))
 
 
 class Curriculum(MethodResource):
-    @doc(description = "查詢課表 ( 日期、時段、課程、時數、教室 )", tags = ['Curriculum'])
+    @jwt_required()
+    @doc(description = "查詢課表 ( 日期、時段、課程、時數、教室 )", tags = ['Curriculum'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(GetCurriculumRequest,location = "query")
     def get(self,**kwargs):
+        identity = get_jwt_identity()
+        if str(identity[0]['Access']) == '1':
+            group = identity[0]['Class']
+        if str(identity[0]['Access']) in ['2','3']:
+            group = kwargs.get("group")
+        if str(identity[0]['Access']) not in ['1','2','3']:
+            return sta.failure('權限不足')
+
         par = {
-            'group': kwargs.get('group'),
+            'group': group,
             'month': kwargs.get('month'),
             'crawler': request.values.get('crawler')
         }
@@ -215,7 +313,7 @@ class Curriculum(MethodResource):
         """
 
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -234,9 +332,20 @@ class Curriculum(MethodResource):
             return sta.failure('參數有誤')
             
 
-    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖 ) 並自動觸發爬蟲", tags = ['Curriculum'])
-    @use_kwargs(PostCurriculumRequest,location = "form")
+    @jwt_required()
+    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖 ) 並自動觸發爬蟲", tags = ['Curriculum'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
+    @use_kwargs(PostFileRequest,location = "form")
     def post(self,**kwargs):
+        identity = get_jwt_identity()
+        if identity[0]['Access'] != '2':
+            return sta.failure('權限不足')
         group = request.values.get('group')
         file = request.files.get('file')
         if file is None or secure_filename(file.filename) == '':
@@ -273,7 +382,7 @@ class Curriculum(MethodResource):
         insert = f"INSERT INTO curriculum.{group} VALUES {val};"
         
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -297,12 +406,30 @@ class Curriculum(MethodResource):
 
 
 class Leave(MethodResource):
-    @doc(description = "查詢請假列表 ( 姓名、日期、時段、假別、原因 )", tags = ['Leave'])
+    @jwt_required()
+    @doc(description = "查詢請假列表 ( 姓名、日期、時段、假別、原因 )", tags = ['Leave'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(GetLeaveRequest,location = "query")
-    def get(self,**kwargs):        
+    def get(self,**kwargs):     
+        identity = get_jwt_identity()
+        if str(identity[0]['Access']) == '1':
+            group = identity[0]['Class']
+            name = identity[0]['Name']
+        if str(identity[0]['Access']) in ['2','3']:
+            group = kwargs.get("group")
+            name = kwargs.get("name")
+        if str(identity[0]['Access']) not in ['1','2','3']:
+            return sta.failure('權限不足')
+
         par = {
-            'group': kwargs.get('group'),
-            'name': kwargs.get('name'),
+            'group': group,
+            'name': name,
             'cur' : kwargs.get('cur'),
             'startdate': kwargs.get('startdate'),
             'stopdate': kwargs.get('stopdate'),
@@ -328,7 +455,7 @@ class Leave(MethodResource):
         sql = f"SELECT DATE_FORMAT(date,'%Y-%m-%d') date,name,time,type,reason FROM leavelist.`{par['group']}` {query} ORDER BY date DESC;"
         
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -345,9 +472,20 @@ class Leave(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "上傳請假列表 ( 姓名、日期、時段、假別、原因 )", tags = ['Leave'])
-    @use_kwargs(PostCurriculumRequest,location = "form")
+    @jwt_required()
+    @doc(description = "上傳請假列表 ( 姓名、日期、時段、假別、原因 )", tags = ['Leave'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
+    @use_kwargs(PostFileRequest,location = "form")
     def post(self,**kwargs):
+        identity = get_jwt_identity()
+        if identity[0]['Access'] != '2':
+            return sta.failure('權限不足')
         group = request.values.get('group')
         file = request.files.get('file')
         if file is None or secure_filename(file.filename) == '':
@@ -390,7 +528,7 @@ class Leave(MethodResource):
         insert = f"INSERT INTO leavelist.{group} VALUES {val};"
         
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -401,7 +539,7 @@ class Leave(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            return redirect(url_for('leave',group=group))
+            return redirect(url_for('leave',group = group))
         except:
             cursor.close()
             db.close()
@@ -409,12 +547,30 @@ class Leave(MethodResource):
 
 
 class Course(MethodResource):
-    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源", tags = ['Course'])
+    @jwt_required()
+    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源", tags = ['Course'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(GetCourseRequest,location = "query")
     def get(self,**kwargs):
+        identity = get_jwt_identity()
+        if str(identity[0]['Access']) == '1':
+            group = identity[0]['Class']
+            name = identity[0]['Name']
+        if str(identity[0]['Access']) in ['2','3']:
+            group = kwargs.get("group")
+            name = kwargs.get("name")
+        if str(identity[0]['Access']) not in ['1','2','3']:
+            return sta.failure('權限不足')
+
         par = {
-            'group': kwargs.get('group'),
-            'name': kwargs.get('name'),
+            'group': group,
+            'name': name,
             'cur' : kwargs.get('cur'),
             'startdate': kwargs.get('startdate'),
             'stopdate': kwargs.get('stopdate'),
@@ -433,7 +589,7 @@ class Course(MethodResource):
         if par['course'] is not None:
             
             try:
-                db, cursor = db_init()
+                db, cursor = dbcon.db_init()
             except:
                 return sta.failure('資料庫連線失敗')
 
@@ -473,13 +629,13 @@ class Course(MethodResource):
             query = 'WHERE' + query[3:]
 
         courses = f"""
-            SELECT course,SUM(TIMESTAMPDIFF(HOUR,shouldin,shouldout)) totalhours,
+            SELECT course,SUM(TIMESTAMPDIFF(MINUTE,shouldin,shouldout)/60) totalhours,
             SUM(CASE WHEN intime IS NULL OR intime >= shouldout OR outtime IS NULL OR outtime <= shouldin THEN 0 
             WHEN TIMEDIFF(shouldin,intime) <= 0 
-            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldin,intime))+MINUTE(TIMEDIFF(shouldin,intime))/60) 
+            THEN TIMESTAMPDIFF(MINUTE,shouldin,shouldout)/60-HOUR(TIMEDIFF(shouldin,intime))-MINUTE(TIMEDIFF(shouldin,intime))/60 
             WHEN TIMEDIFF(shouldout,outtime) >= 0 
-            THEN TIMESTAMPDIFF(HOUR,shouldin,shouldout)-(HOUR(TIMEDIFF(shouldout,outtime))+MINUTE(TIMEDIFF(shouldout,outtime))/60) 
-            ELSE TIMESTAMPDIFF(HOUR,shouldin,shouldout) END) AS present
+            THEN TIMESTAMPDIFF(MINUTE,shouldin,shouldout)/60-HOUR(TIMEDIFF(shouldout,outtime))-MINUTE(TIMEDIFF(shouldout,outtime))/60 
+            ELSE TIMESTAMPDIFF(MINUTE,shouldin,shouldout)/60 END) AS present
             FROM 
             (SELECT CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) date,
             CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',course,
@@ -500,14 +656,14 @@ class Course(MethodResource):
 
         totals = f"""
             SELECT COUNT(DISTINCT(course)) totalcourse,
-            SUM(TIMESTAMPDIFF(HOUR,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
-            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))) totalhours,
+            SUM(TIMESTAMPDIFF(MINUTE,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
+            str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))/60) totalhours,
             COUNT(DISTINCT(CASE WHEN CONCAT(SUBSTRING(date,1,4)+1911, SUBSTRING(date,5)) <= curdate() THEN course END)) AS progress 
             FROM curriculum.`{par['group']}`;
         """
 
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -528,22 +684,41 @@ class Course(MethodResource):
             return sta.failure('參數有誤')
 
 
-    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源", tags = ['Course'])
+    @jwt_required()
+    @doc(description = "各課程總時數、出席時數、總課程時數、課程總數、已進行課程數、課程學習資源", tags = ['Course'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(GetCourseRequest)
     def post(self,**kwargs):
         return redirect(url_for('course',**kwargs))
     
 
 class Crawler(MethodResource):
-    @doc(description = "查詢學習資源爬蟲狀態", tags = ['Crawler'])
+    @jwt_required()
+    @doc(description = "查詢學習資源爬蟲狀態", tags = ['Crawler'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(CrawlerRequest,location="query")
     def get(self,**kwargs):
+        identity = get_jwt_identity()
+        if identity[0]['Access'] != '2':
+            return sta.failure('權限不足')
         group = kwargs.get('group')
 
         sql = f"SELECT * FROM curriculum.`crawlerstatus` WHERE groups = '{group}';"
 
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
@@ -561,31 +736,32 @@ class Crawler(MethodResource):
             db.close()
             return sta.failure('參數有誤')
 
-    @doc(description = "手動執行學習資源爬蟲", tags = ['Crawler'])
+    
+    @jwt_required()
+    @doc(description = "手動執行學習資源爬蟲", tags = ['Crawler'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
     @use_kwargs(CrawlerRequest)
     def post(self,**kwargs):
+        identity = get_jwt_identity()
+        if identity[0]['Access'] != '2':
+            return sta.failure('權限不足')
         group = kwargs.get('group')
         sql = f"""
             INSERT INTO curriculum.crawlerstatus (groups,videos,articles) VALUES('{group}','in progress','in progress') 
             ON DUPLICATE KEY UPDATE videos = 'in progress',articles = 'in progress',date = CURRENT_TIMESTAMP;
         """
-        
-        check = """
-            SELECT GROUP_CONCAT(table_name) groups FROM information_schema.tables 
-            WHERE table_schema = 'curriculum' AND table_name NOT IN ('crawlerstatus','resource');
-        """
-        
         try:
-            db, cursor = db_init()
+            db, cursor = dbcon.db_init()
         except:
             return sta.failure('資料庫連線失敗')
 
         try:
-            cursor.execute(check)
-            data = cursor.fetchall()
-            groups = data[0]['groups'].split(",")
-            if group not in groups:
-                return sta.failure('未上傳課表')
             subprocess.Popen(f"python3 video.py {group}",shell = True)
             subprocess.Popen(f"python3 article.py {group}",shell = True)
             cursor.execute(sql)
