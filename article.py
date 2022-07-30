@@ -12,12 +12,12 @@ import time,random
 from dotenv import load_dotenv
 
 load_dotenv()
-logging.basicConfig(filename = "/home/ec2-user/article.log",
+logging.basicConfig(filename = os.getenv("arclog"),
                     level = logging.INFO,
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
-savepath = "/home/ec2-user/article.log"
+savepath = os.getenv("arclog")
 if not os.path.exists(savepath):
     logging.warning("Warning! The savepath provided doesn\'t exist!Saving at current directory")
     savepath = os.getcwd() 
@@ -38,7 +38,7 @@ list_of_curriculum = df[0].tolist()
 for cur in list_of_curriculum:
     query = cur+" 教學" #用課程名稱+教學避免查出官方網站或官方文件
     try:
-        for i in search(query, stop = 3, pause = 1.0):  #query表示關鍵字，stop表示查詢筆數，pause表示查詢停留時間
+        for i in search(query, stop = int(os.getenv("search")), pause = 1.0):  #query表示關鍵字，stop表示查詢筆數，pause表示查詢停留時間
             if 'youtube' in i:  #跳過三個常常出現的不相干網站
                 pass
             elif 'udemy' in i:
