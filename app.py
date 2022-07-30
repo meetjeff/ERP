@@ -17,7 +17,7 @@ jwt = JWTManager(app)
 # CORS(app)
 api = Api(app)
 app.config['JWT_SECRET_KEY'] = os.getenv("secretkey")
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes = 60)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes = int(os.getenv("tokenexpires")))
 app.config.update({
     'APISPEC_SPEC': APISpec(
         title = 'Erp Project API',
