@@ -1,6 +1,6 @@
 from flask_apispec import doc,use_kwargs,MethodResource
 from model import GetPunchRequest,GetCourseRequest,GetCountRequest,GetCurriculumRequest,GetLeaveRequest
-from model import PostFileRequest,CrawlerRequest,LoginRequest
+from model import Getinfo,PostFileRequest,CrawlerRequest,LoginRequest
 import sta
 from flask import request,redirect,url_for
 from werkzeug.utils import secure_filename
@@ -11,6 +11,48 @@ from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
 import dbcon
 
 class Login(MethodResource):
+    @jwt_required()
+    @doc(description = "自動帶入基本資料", tags = ['Getinfo'], params = {
+        'Authorization': {
+            'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
+            'in':'header',
+            'type':'string',
+            'required':True
+        }
+    })
+    @use_kwargs(Getinfo, location = "query")
+    def get(self,**kwargs):
+        identity = get_jwt_identity()
+        if str(identity[0]['Access']) == '1':
+            group = identity[0]['Class']
+            name = identity[0]['Name']
+        if str(identity[0]['Access']) in ['2','3']:
+            group = kwargs.get("group")
+            name = kwargs.get("name")
+        if str(identity[0]['Access']) not in ['1','2','3']:
+            return sta.failure('權限不足')
+        
+        sql = f"SELECT Class,Name,Id,Email FROM `personal_data`.{group} WHERE LOWER(Name) = LOWER('{name}');"
+        
+        try:
+            db, cursor = dbcon.db_init()
+        except:
+            return sta.failure('資料庫連線失敗')
+
+        try:
+            cursor.execute(sql)
+            user = cursor.fetchall()
+            cursor.close()
+            db.close()
+            if user != ():
+                return sta.success(user)
+        except:
+            cursor.close()
+            db.close()
+            return sta.failure('參數有誤')
+        return sta.failure("Account does not exist")
+
+
     @doc(description = "登入 ( 群組、帳號、密碼 )", tags = ['Login'])
     @use_kwargs(LoginRequest)
     def post(self,**kwargs):
