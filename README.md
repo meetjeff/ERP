@@ -151,7 +151,7 @@
 ###### -GET-
 查看學習資源爬蟲執行狀態 ( 班級、影片、文章、最後更新時間 )
 
-**Input Parameters  ( group必填 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 
 **Success Example**
@@ -167,7 +167,7 @@
 ###### -POST-
 手動執行學習資源爬蟲 ( 課表上傳成功會自動觸發 )
 
-**Input Parameters  ( group必填 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 
 **Success Example**
@@ -219,7 +219,7 @@
 依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )  
 上傳成功後觸發學習資源爬蟲
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * file　　　&thinsp;&thinsp;&thinsp;( 課表csv檔、6欄、utf-8編碼，e.g., 課表.csv )
 
@@ -257,7 +257,7 @@
 ###### -GET-
 依班級、姓名、當日或當月、日期範圍、假別篩選請假列表 ( 姓名、日期、時段、假別、原因 )
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
@@ -292,7 +292,7 @@
 ###### -POST-
 依班級上傳請假表單 ( 姓名、日期、時段、假別、原因 )
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * file　　　&thinsp;&thinsp;&thinsp;( 請假csv檔、5欄、utf-8編碼，e.g., 請假.csv )
 
@@ -329,7 +329,7 @@
 ( 日期、姓名、簽到、簽退、簽到ip、簽退ip、打卡狀態 )  
 可依單頁筆數進行分頁篩選 ( 回傳總筆數、總頁數 )
 
-**Input Parameters  ( group必填，其他可選 ) :**
+**Input Parameters :**
 * group　　&thinsp;( 班級，e.g., fn101 )
 * name　 　&thinsp;( 姓名，不分大小寫，e.g., jeff )
 * cur　　　&thinsp;&thinsp;&thinsp;( 當日或當月，當日 : today，當月 : month )
