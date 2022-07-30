@@ -1,5 +1,5 @@
 #sudo pip3 install
-
+flask-jwt-extended
 python-dotenv
 beautifulsoup4
 requests
