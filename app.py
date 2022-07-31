@@ -9,6 +9,7 @@ from flask_jwt_extended import JWTManager
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+from flask import jsonify
 
 load_dotenv()
 
