@@ -18,6 +18,7 @@ jwt = JWTManager(app)
 api = Api(app)
 app.config['JWT_SECRET_KEY'] = os.getenv("secretkey")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes = int(os.getenv("tokenexpires")))
+app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config.update({
     'APISPEC_SPEC': APISpec(
         title = 'Erp Project API',
@@ -31,6 +32,20 @@ app.config.update({
     'MAX_CONTENT_LENGTH': 1024 * 1024
 })
 docs = FlaskApiSpec(app)
+
+@app.errorhandler(422)
+@app.errorhandler(400)
+def handle_error(err):
+    print(err)
+    headers = err.data.get("headers", None)
+    print(headers)
+    messages = err.data.get("messages", ["Invalid request."])
+    print(messages)
+    if headers:
+        return jsonify({"errors": messages}), err.code, headers
+    else:
+        return jsonify({"errors": messages}), err.code
+
 
 api.add_resource(Punch,'/punch')
 docs.register(Punch)
