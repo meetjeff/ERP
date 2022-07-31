@@ -15,15 +15,13 @@
 **Success Example**
 ```yaml
 {
-  "data": [
-    {
-      "Class": "fn101",
-      "Email": "amy123@gmail.com",
-      "Id": 1,
-      "Name": "Amy"
-    }
-  ],
-  "datatime": "2022-07-30T20:19:20.043527",
+  "data": {
+    "Class": "DV102",
+    "Email": "jill@ntc.im",
+    "Id": 2,
+    "Name": "Albee"
+  },
+  "datatime": "2022-07-31T19:28:18.829190",
   "message": "success"
 }
 ```
