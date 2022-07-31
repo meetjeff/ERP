@@ -1,4 +1,5 @@
 #sudo pip3 install
+jsonify
 flask-jwt-extended
 python-dotenv
 beautifulsoup4
