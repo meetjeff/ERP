@@ -10,8 +10,14 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 from flask import jsonify
+import logging
 
 load_dotenv()
+
+logging.basicConfig(filename = os.getenv("punchlog"),
+                    level = logging.INFO,
+                    format = "%(asctime)s %(message)s",
+                    datefmt = "%d/%m/%Y %I:%M:%S %p")
 
 app = Flask(__name__)
 jwt = JWTManager(app)
@@ -37,11 +43,9 @@ docs = FlaskApiSpec(app)
 @app.errorhandler(422)
 @app.errorhandler(400)
 def handle_error(err):
-    print(err)
     headers = err.data.get("headers", None)
-    print(headers)
     messages = err.data.get("messages", ["Invalid request."])
-    print(messages)
+    logging.info(messages)
     if headers:
         return jsonify({"errors": messages}), err.code, headers
     else:
