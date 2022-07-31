@@ -11,4 +11,4 @@ def success(data = None):
     }, 200
 
 def failure(message):
-    return {"message": "failure," + message}, 500
+    return {"message": "failure," + message}, 400
