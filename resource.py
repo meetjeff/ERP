@@ -42,7 +42,7 @@ class Login(MethodResource):
 
         try:
             cursor.execute(sql)
-            user = cursor.fetchall()
+            user = cursor.fetchone()
             cursor.close()
             db.close()
             if user != ():
@@ -60,7 +60,10 @@ class Login(MethodResource):
         group = kwargs.get("group")
         account = kwargs.get("account")
         password = kwargs.get("password")
-        sql = f"SELECT Access,Class,Name FROM personal_data.{group} WHERE LOWER(Name) = LOWER('{account}') AND Password = '{password}';"
+        sql = f"""
+            SELECT Access,LOWER(Class) Class,Name FROM personal_data.{group} 
+            WHERE LOWER(Name) = LOWER('{account}') AND Password = '{password}';
+        """
         
         try:
             db, cursor = dbcon.db_init()
@@ -74,7 +77,7 @@ class Login(MethodResource):
             db.close()
 
             if user != ():
-                access_token = create_access_token(identity=user)
+                access_token = create_access_token(identity = user)
                 data = {
                     "message": f"Welcome {user[0]['Name']}",
                     "access_token": access_token}
