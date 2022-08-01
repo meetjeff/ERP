@@ -41,8 +41,8 @@ class Login(MethodResource):
         
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -71,8 +71,8 @@ class Login(MethodResource):
         
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -175,8 +175,8 @@ class Punch(MethodResource):
 
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -292,8 +292,8 @@ class Count(MethodResource):
 
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -362,8 +362,8 @@ class Curriculum(MethodResource):
 
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -431,8 +431,8 @@ class Curriculum(MethodResource):
         
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(create)
@@ -508,8 +508,8 @@ class Leave(MethodResource):
         
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -581,8 +581,8 @@ class Leave(MethodResource):
         
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+       except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(create)
@@ -642,8 +642,8 @@ class Course(MethodResource):
             
             try:
                 db, cursor = dbcon.db_init()
-            except:
-                return sta.failure('資料庫連線失敗')
+            except Exception as e:
+                return sta.failure('資料庫連線失敗',e)
 
             try:
                 cursor.execute(videos)
@@ -716,8 +716,8 @@ class Course(MethodResource):
 
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(courses)
@@ -771,8 +771,8 @@ class Crawler(MethodResource):
 
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             cursor.execute(sql)
@@ -810,8 +810,8 @@ class Crawler(MethodResource):
         """
         try:
             db, cursor = dbcon.db_init()
-        except:
-            return sta.failure('資料庫連線失敗')
+        except Exception as e:
+            return sta.failure('資料庫連線失敗',e)
 
         try:
             subprocess.Popen(f"python3 video.py {group}",shell = True)
