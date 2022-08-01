@@ -29,7 +29,11 @@ class Login(MethodResource):
             name = identity[0]['Name']
         if str(identity[0]['Access']) in ['2','3']:
             group = kwargs.get("group")
+            if group is None:
+                return sta.failure('請選擇班級')
             name = kwargs.get("name")
+            if name is None:
+                return sta.failure('請輸入姓名')
         if str(identity[0]['Access']) not in ['1','2','3']:
             return sta.failure('權限不足')
         
