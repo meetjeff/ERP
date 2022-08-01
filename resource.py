@@ -86,10 +86,10 @@ class Login(MethodResource):
                     "message": f"Welcome {user[0]['Name']}",
                     "access_token": access_token}
                 return sta.success(data)
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
             
         return sta.failure("Account or password is wrong")
 
@@ -188,10 +188,10 @@ class Punch(MethodResource):
             cursor.close()
             db.close()
             return sta.success(data)
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
 
 
     @jwt_required()
@@ -302,10 +302,10 @@ class Count(MethodResource):
             cursor.close()
             db.close()
             return sta.success(data)
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
 
 
     @jwt_required()
@@ -374,10 +374,10 @@ class Curriculum(MethodResource):
             if par['crawler'] is not None:
                 data = {'curriculum': data,'crawlerstatus': par['crawler']}
             return sta.success(data)
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
             
 
     @jwt_required()
@@ -451,10 +451,10 @@ class Curriculum(MethodResource):
             except:
                 crawler = cra.text
             return redirect(url_for('curriculum',group = group,crawler = crawler))
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('課表有誤')
+            return sta.failure('課表有誤',e)
 
 
 class Leave(MethodResource):
@@ -518,10 +518,10 @@ class Leave(MethodResource):
             cursor.close()
             db.close()
             return sta.success(data)
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
 
 
     @jwt_required()
@@ -592,10 +592,10 @@ class Leave(MethodResource):
             cursor.close()
             db.close()
             return redirect(url_for('leave',group = group))
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('檔案內容有誤')
+            return sta.failure('檔案內容有誤',e)
 
 
 class Course(MethodResource):
@@ -656,10 +656,10 @@ class Course(MethodResource):
                 db.close()
                 return sta.success(data)
 
-            except:
+            except Exception as e:
                 cursor.close()
                 db.close()
-                return sta.failure('參數有誤')
+                return sta.failure('參數有誤',e)
 
         query = ""
         if par['name'] is not None:
@@ -730,10 +730,10 @@ class Course(MethodResource):
             db.close()
             return sta.success(data)
         
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
 
 
     @jwt_required()
@@ -783,10 +783,10 @@ class Crawler(MethodResource):
             cursor.close()
             db.close()
             return data
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
 
     
     @jwt_required()
@@ -821,9 +821,9 @@ class Crawler(MethodResource):
             cursor.close()
             db.close()
             return redirect(url_for('crawler',group = group))
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
         
         
