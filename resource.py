@@ -45,12 +45,12 @@ class Login(MethodResource):
             user = cursor.fetchone()
             cursor.close()
             db.close()
-            if user != ():
+            if user != None:
                 return sta.success(user)
-        except:
+        except Exception as e:
             cursor.close()
             db.close()
-            return sta.failure('參數有誤')
+            return sta.failure('參數有誤',e)
         return sta.failure("Account does not exist")
 
 
