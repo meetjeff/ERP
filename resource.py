@@ -418,8 +418,8 @@ class Curriculum(MethodResource):
         
         try:
             ts = file.readline().decode('utf-8')
-        except:
-            return sta.failure('請使用utf-8編碼')
+        except Exception as e:
+            return sta.failure('請使用utf-8編碼',e)
 
         while ts is not None and ts != '':
             ts = file.readline().decode("utf-8")
@@ -564,8 +564,8 @@ class Leave(MethodResource):
         
         try:
             ts = file.readline().decode('utf-8')
-        except:
-            return sta.failure('請使用utf-8編碼')
+        except Exception as e:
+            return sta.failure('請使用utf-8編碼',e)
 
         while ts is not None and ts != '':
             ts = file.readline().decode('utf-8')
@@ -589,7 +589,7 @@ class Leave(MethodResource):
         
         try:
             db, cursor = dbcon.db_init()
-       except Exception as e:
+        except Exception as e:
             return sta.failure('資料庫連線失敗',e)
 
         try:
