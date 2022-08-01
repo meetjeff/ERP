@@ -112,6 +112,8 @@ class Punch(MethodResource):
             name = identity[0]['Name']
         if str(identity[0]['Access']) in ['2','3']:
             group = kwargs.get("group")
+            if group is None:
+                return sta.failure('請選擇班級')
             name = kwargs.get("name")
         if str(identity[0]['Access']) not in ['1','2','3']:
             return sta.failure('權限不足')
@@ -226,6 +228,8 @@ class Count(MethodResource):
             name = identity[0]['Name']
         if str(identity[0]['Access']) in ['2','3']:
             group = kwargs.get("group")
+            if group is None:
+                return sta.failure('請選擇班級')
             name = kwargs.get("name")
         if str(identity[0]['Access']) not in ['1','2','3']:
             return sta.failure('權限不足')
@@ -339,6 +343,8 @@ class Curriculum(MethodResource):
             group = identity[0]['Class']
         if str(identity[0]['Access']) in ['2','3']:
             group = kwargs.get("group")
+            if group is None:
+                return sta.failure('請選擇班級')
         if str(identity[0]['Access']) not in ['1','2','3']:
             return sta.failure('權限不足')
 
@@ -475,6 +481,8 @@ class Leave(MethodResource):
             name = identity[0]['Name']
         if str(identity[0]['Access']) in ['2','3']:
             group = kwargs.get("group")
+            if group is None:
+                return sta.failure('請選擇班級')
             name = kwargs.get("name")
         if str(identity[0]['Access']) not in ['1','2','3']:
             return sta.failure('權限不足')
