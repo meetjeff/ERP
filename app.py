@@ -9,7 +9,6 @@ from flask_jwt_extended import JWTManager
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
-from flask import jsonify
 import logging
 
 load_dotenv()
@@ -47,9 +46,9 @@ def handle_error(err):
     messages = err.data.get("messages", ["Invalid request."])
     logging.info(messages)
     if headers:
-        return jsonify({"errors": messages}), err.code, headers
+        return {"errors": messages}, err.code, headers
     else:
-        return jsonify({"errors": messages}), err.code
+        return {"errors": messages}, err.code
 
 
 api.add_resource(Punch,'/punch')
