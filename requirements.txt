@@ -1,4 +1,5 @@
 #sudo pip3 install
+flask_cors
 gevent
 gunicorn
 flask-jwt-extended
