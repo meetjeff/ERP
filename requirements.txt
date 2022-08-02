@@ -8,7 +8,6 @@ lxml
 google
 pymysql
 pandas
-requests_html
 aniso8601==9.0.1
 apispec==5.2.2
 certifi==2022.6.15
