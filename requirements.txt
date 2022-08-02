@@ -1,5 +1,6 @@
 #sudo pip3 install
-
+gevent
+gunicorn
 flask-jwt-extended
 python-dotenv
 beautifulsoup4
