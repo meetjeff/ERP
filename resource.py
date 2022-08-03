@@ -816,12 +816,23 @@ class Crawler(MethodResource):
             INSERT INTO curriculum.crawlerstatus (groups,videos,articles) VALUES('{group}','in progress','in progress') 
             ON DUPLICATE KEY UPDATE videos = 'in progress',articles = 'in progress',date = CURRENT_TIMESTAMP;
         """
+        
+        check = """
+            SELECT GROUP_CONCAT(table_name) groups FROM information_schema.tables 
+            WHERE table_schema = 'curriculum' AND table_name NOT IN ('crawlerstatus','resource');
+        """
+        
         try:
             db, cursor = dbcon.db_init()
         except Exception as e:
             return sta.failure('資料庫連線失敗',e)
 
         try:
+            cursor.execute(check)
+            data = cursor.fetchall()
+            groups = data[0]['groups'].split(",")
+            if group not in groups:
+                return sta.failure('未上傳課表')
             subprocess.Popen(f"python3 video.py {group}",shell = True)
             subprocess.Popen(f"python3 article.py {group}",shell = True)
             cursor.execute(sql)
