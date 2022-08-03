@@ -260,7 +260,7 @@ Return Authorization Bearer Token
 ```
 
 ###### -POST-
-依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖 )  
+依班級上傳課表 ( 課程、日期、時起、分起、時訖、分訖、教室 )  
 上傳成功後觸發學習資源爬蟲
 
 **Input Parameters :**
