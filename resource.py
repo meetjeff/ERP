@@ -387,7 +387,7 @@ class Curriculum(MethodResource):
             
 
     @jwt_required()
-    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖 ) 並自動觸發爬蟲", tags = ['Curriculum'], params = {
+    @doc(description = "上傳課表 ( 課程、日期、時起、分起、時訖、分訖、教室 ) 並自動觸發爬蟲", tags = ['Curriculum'], params = {
         'Authorization': {
             'description':'Authorization HTTP header with JWT access token, like: Bearer (token)',
             'in':'header',
