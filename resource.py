@@ -363,7 +363,7 @@ class Curriculum(MethodResource):
             CASE WHEN starthour <= 12 THEN 'AM' ELSE 'PM' END AS 'part',course,
             TIMESTAMPDIFF(MINUTE,str_to_date(CONCAT(starthour,':',startminute,':00'),'%H:%i:%s'),
             str_to_date(CONCAT(stophour,':',stopminute,':00'),'%H:%i:%s'))/60 hours,
-            '123' classroom FROM curriculum.`{par['group']}` {query};
+            classroom FROM curriculum.`{par['group']}` {query};
         """
 
         try:
@@ -411,7 +411,7 @@ class Curriculum(MethodResource):
 
         create = f"""
             CREATE TABLE IF NOT EXISTS curriculum.{group} 
-            (course varchar(50),date date,starthour int(10),startminute int(10),stophour int(10),stopminute int(10));
+            (course varchar(50),date date,starthour int(10),startminute int(10),stophour int(10),stopminute int(10),classroom varchar(20));
         """
         truncate = f"TRUNCATE TABLE curriculum.{group};"
         val = []
@@ -425,8 +425,8 @@ class Curriculum(MethodResource):
             ts = file.readline().decode("utf-8")
             if ts is None or ts == '':
                 break
-            if len(ts.split(',')) != 6:
-                return sta.failure('欄位有誤(6欄)')
+            if len(ts.split(',')) != 7:
+                return sta.failure('欄位有誤(需7欄)')
 
             tsn = f"('{ts.split(',')[0]}','{ts.split(',')[1]}',"+",".join(ts.split(',')[2:])+")"
             val.append(tsn)
@@ -572,7 +572,7 @@ class Leave(MethodResource):
             if ts is None or ts == '':
                 break
             if len(ts.split(',')) != 5:
-                return sta.failure('欄位有誤(5欄)')
+                return sta.failure('欄位有誤(需5欄)')
 
             tl = ts.split(',')
             if tl[4] == "\r\n":
