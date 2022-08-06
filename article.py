@@ -4,6 +4,7 @@ from lxml import html
 from googlesearch import search
 import pymysql
 import pandas as pd
+from fake_useragent import UserAgent
 import sys
 import logging
 import os
@@ -26,7 +27,9 @@ else:
     logging.info("Savepath provided is correct,saving at %s",str(savepath))
 
 group=sys.argv[1]
-headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15'}
+ua = UserAgent()
+user_agent = ua.random
+headers = {'User-Agent':user_agent}
 db = pymysql.connect(host = os.getenv("dbip"), port = int(os.getenv("dbport")), user = os.getenv("dbuser"), passwd = os.getenv("dbpassword"))
 cursor = db.cursor()
 sql = f"SELECT DISTINCT course FROM curriculum.{group} WHERE course not REGEXP'專題|輔導|產品|企業|研討會|典禮|結訓';" #篩掉部分關鍵字
