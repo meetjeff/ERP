@@ -17,7 +17,7 @@ def success(data = None):
     return {
         'message': 'success',
         'data': data,
-        'datatime': datetime.utcnow().isoformat()
+        'datatime': datetime.now()
     }, 200
 
 def failure(message,e = None):
