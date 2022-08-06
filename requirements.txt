@@ -1,4 +1,5 @@
 #sudo pip3 install
+fake-useragent
 flask_cors
 gevent
 gunicorn
