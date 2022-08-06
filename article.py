@@ -8,7 +8,6 @@ from fake_useragent import UserAgent
 import sys
 import logging
 import os
-import re
 import time,random
 from dotenv import load_dotenv
 
