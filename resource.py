@@ -833,8 +833,11 @@ class Crawler(MethodResource):
             groups = data[0]['groups'].split(",")
             if group not in groups:
                 return sta.failure('未上傳課表')
-            subprocess.Popen(f"python3 video.py {group}",shell = True)
-            subprocess.Popen(f"python3 article.py {group}",shell = True)
+            
+            load_dotenv()
+            workdir = os.getenv("workdir")
+            subprocess.Popen(f"{workdir} video.py {group}",shell = True)
+            subprocess.Popen(f"{workdir} article.py {group}",shell = True)
             cursor.execute(sql)
             db.commit()
             cursor.close()
