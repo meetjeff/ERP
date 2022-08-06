@@ -163,7 +163,7 @@ class Punch(MethodResource):
             (SELECT Name name FROM personal_data.`{par['group']}`) AS person left join 
             (SELECT a.date date,a.fullname name,intime,outtime,inip,outip 
             FROM 
-            (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip
             FROM punch.`{par['group']}` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
@@ -285,7 +285,7 @@ class Count(MethodResource):
             (SELECT date,name,time FROM leavelist.`{par['group']}`) AS leavetime using(date,name) left join 
             (SELECT a.date date,a.fullname name,intime,outtime,inip,outip 
             FROM 
-            ((SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
+            ((SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname,
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip 
             FROM punch.`{par['group']}` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname,
@@ -705,7 +705,7 @@ class Course(MethodResource):
             left join 
             (SELECT a.date date2,a.fullname name2,intime,outtime,inip,outip 
             FROM 
-            (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
+            (SELECT SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(timestamp),@@session.time_zone,'+8:00'),1,10) date,fullname, 
             SUBSTRING(CONVERT_TZ(FROM_UNIXTIME(min(timestamp)),@@session.time_zone,'+8:00'),12) intime,ipaddress inip
             FROM punch.`{par['group']}` where `inout` = 'in' GROUP BY date,fullname) AS a left join 
             (SELECT SUBSTRING(FROM_UNIXTIME(timestamp),1,10) date,fullname, 
