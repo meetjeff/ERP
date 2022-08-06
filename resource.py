@@ -775,7 +775,7 @@ class Crawler(MethodResource):
             return sta.failure('權限不足')
         group = kwargs.get('group')
 
-        sql = f"SELECT * FROM curriculum.`crawlerstatus` WHERE groups = '{group}';"
+        sql = f"SELECT CONVERT_TZ(date,@@session.time_zone,'+8:00') updatetime,groups,videos,articles FROM curriculum.`crawlerstatus` WHERE groups = '{group}';"
 
         try:
             db, cursor = dbcon.db_init()
