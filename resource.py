@@ -130,7 +130,7 @@ class Punch(MethodResource):
         }
 
         query = 'WHERE date <= curdate()'
-        if par['name'] is not None:
+        if par['name'] is not None and par['name'] != "":
             query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
             query += "AND date = curdate()"
@@ -243,7 +243,7 @@ class Count(MethodResource):
         }
 
         query = 'WHERE date <= curdate()'
-        if par['name'] is not None:
+        if par['name'] is not None and par['name'] != "":
             query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
             query += "AND date = curdate()"
@@ -497,7 +497,7 @@ class Leave(MethodResource):
         }
 
         query = ''
-        if par['name'] is not None:
+        if par['name'] is not None and par['name'] != "":
             query += f"AND LOWER(name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
             query += "AND date = curdate()"
@@ -670,7 +670,7 @@ class Course(MethodResource):
                 return sta.failure('參數有誤',e)
 
         query = ""
-        if par['name'] is not None:
+        if par['name'] is not None and par['name'] != "":
             query += f"AND LOWER(Name) = LOWER('{par['name']}')"
         if par['cur'] == 'today':
             query += "AND date = curdate()"
@@ -768,14 +768,17 @@ class Crawler(MethodResource):
             'required':True
         }
     })
-    @use_kwargs(CrawlerRequest,location="query")
+    @use_kwargs(CrawlerRequest,location = "query")
     def get(self,**kwargs):
         identity = get_jwt_identity()
         if identity[0]['Access'] != '2':
             return sta.failure('權限不足')
         group = kwargs.get('group')
 
-        sql = f"SELECT CONVERT_TZ(date,@@session.time_zone,'+8:00') updatetime,groups,videos,articles FROM curriculum.`crawlerstatus` WHERE groups = '{group}';"
+        sql = f"""
+            SELECT CONVERT_TZ(date,@@session.time_zone,'+8:00') updatetime,groups,videos,articles 
+            FROM curriculum.`crawlerstatus` WHERE groups = '{group}';
+        """
 
         try:
             db, cursor = dbcon.db_init()
