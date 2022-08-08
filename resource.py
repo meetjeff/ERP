@@ -10,6 +10,7 @@ import subprocess
 from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
 import dbcon
 from dotenv import load_dotenv
+import re
 
 class Login(MethodResource):
     @jwt_required()
@@ -64,6 +65,9 @@ class Login(MethodResource):
         group = kwargs.get("group")
         account = kwargs.get("account")
         password = kwargs.get("password")
+        if re.search('\W',group+account+password) != None:
+            return sta.failure('請勿輸入特殊字元')
+        
         sql = f"""
             SELECT Access,LOWER(Class) Class,Name FROM personal_data.{group} 
             WHERE LOWER(Name) = LOWER('{account}') AND Password = '{password}';
