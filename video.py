@@ -15,15 +15,15 @@ logging.basicConfig(filename = os.getenv("videolog"),
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
+group=sys.argv[1]
 savepath = os.getenv("videolog")
 if not os.path.exists(savepath):
     logging.warning("Warning! The savepath provided doesn\'t exist!Saving at current directory")
     savepath = os.getcwd() 
     logging.info("savepath reset at %s",str(savepath))
 else:
-    logging.info("Savepath provided is correct,saving at %s",str(savepath))
+    logging.info("Start %s video search",str(group))
 
-group=sys.argv[1]
 db1 = pymysql.connect(host = os.getenv("dbip"), port = int(os.getenv("dbport")), user = os.getenv("dbuser"), passwd = os.getenv("dbpassword"))
 cursor1 = db1.cursor()
 sql1 = f"SELECT DISTINCT course FROM curriculum.{group} WHERE course not REGEXP'專題|輔導|產品|企業|研討會|典禮|結訓';" #篩掉部分關鍵字
