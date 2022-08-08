@@ -17,15 +17,15 @@ logging.basicConfig(filename = os.getenv("arclog"),
                     format = "%(asctime)s %(message)s",
                     datefmt = "%d/%m/%Y %I:%M:%S %p")
 
+group=sys.argv[1]
 savepath = os.getenv("arclog")
 if not os.path.exists(savepath):
     logging.warning("Warning! The savepath provided doesn\'t exist!Saving at current directory")
     savepath = os.getcwd() 
     logging.info("savepath reset at %s",str(savepath))
 else:
-    logging.info("Savepath provided is correct,saving at %s",str(savepath))
+    logging.info("Start %s article search",str(group))
 
-group=sys.argv[1]
 ua = UserAgent()
 user_agent = ua.random
 headers = {'User-Agent':user_agent}
