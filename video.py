@@ -1,4 +1,4 @@
-from googlesearch import search
+from googlesearch import search,get_random_user_agent
 import pymysql
 import pandas as pd
 import sys
@@ -35,7 +35,7 @@ list_of_curriculum1 = df1[0].tolist()
 for cur1 in list_of_curriculum1:                    
     queryv = cur1 + "youtube"
     try:
-        for i2 in search(queryv, stop = int(os.getenv("search")), pause = 1.0):
+        for i2 in search(queryv, stop = int(os.getenv("search")), pause = 3.5, user_agent = get_random_user_agent()):
             if 'https://www.youtube.com/watch?v=' in i2:  
                 try:
                     watch = re.sub("watch\?v=","embed/", i2)
