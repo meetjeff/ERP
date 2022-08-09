@@ -271,10 +271,15 @@ Return Authorization Bearer Token
 ```yaml
 {
   "data": {
-    "crawlerstatus": "{'articles': 'in progress', 'date': 'Sat, 23 Jul 2022 18:45:42 GMT', 'groups': 'se102', 'videos': 'in progress'}",
+    "crawlerstatus": {
+      "articles": "in progress",
+      "groups": "fn101",
+      "updatetime": "Tue, 09 Aug 2022 16:08:58 GMT",
+      "videos": "in progress"
+    },
     "curriculum": [
       {
-        "classroom": "123",
+        "classroom": "302",
         "course": "開訓典禮",
         "date": "2021-12-15",
         "hours": 3,
@@ -284,7 +289,7 @@ Return Authorization Bearer Token
     .
     .
       {
-        "classroom": "123",
+        "classroom": "209",
         "course": "產品實做",
         "date": "2022-05-26",
         "hours": 3,
