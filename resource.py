@@ -11,6 +11,7 @@ from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
 import dbcon
 from dotenv import load_dotenv
 import re
+import json
 
 class Login(MethodResource):
     @jwt_required()
@@ -382,7 +383,11 @@ class Curriculum(MethodResource):
             cursor.close()
             db.close()
             if par['crawler'] is not None:
-                data = {'curriculum': data,'crawlerstatus': par['crawler']}
+                try :
+                    crawlerstatus = json.loads(par['crawler'].replace("\'", "\""))
+                except :
+                    crawlerstatus = par['crawler']
+                data = {'curriculum': data,'crawlerstatus': crawlerstatus}
             return sta.success(data)
         except Exception as e:
             cursor.close()
