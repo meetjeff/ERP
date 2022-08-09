@@ -40,7 +40,7 @@ list_of_curriculum = df[0].tolist()
 for cur in list_of_curriculum:
     query = cur+" 教學" #用課程名稱+教學避免查出官方網站或官方文件
     try:
-        for i in search(query, stop = int(os.getenv("search")), pause = 1.0, user_agent = get_random_user_agent()):  #query表示關鍵字，stop表示查詢筆數，pause表示查詢停留時間
+        for i in search(query, stop = int(os.getenv("search")), pause = 3.5, user_agent = get_random_user_agent()):  #query表示關鍵字，stop表示查詢筆數，pause表示查詢停留時間
             if 'youtube' in i:  #跳過三個常常出現的不相干網站
                 pass
             elif 'udemy' in i:
