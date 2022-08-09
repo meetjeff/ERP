@@ -12,6 +12,8 @@ import dbcon
 from dotenv import load_dotenv
 import re
 import json
+from datetime import datetime,timedelta
+import time
 
 class Login(MethodResource):
     @jwt_required()
@@ -440,6 +442,17 @@ class Curriculum(MethodResource):
             tsn = f"('{ts.split(',')[0]}','{ts.split(',')[1]}',"+",".join(ts.split(',')[2:])+")"
             val.append(tsn)
         file.close()
+        
+        load_dotenv()
+        trigger = os.getenv("crawlertrigger")
+        data = {"group":f"{group}"}
+        token = {'Authorization': request.headers.get('Authorization')}
+        
+        c = requests.get(trigger, params = data, headers = token).json()['updatetime']
+        ntime = datetime.strptime(time.ctime(),'%a %b  %d %H:%M:%S %Y')
+        ctime = datetime.strptime(c,'%a, %d %b %Y %H:%M:%S GMT')
+        if ntime - ctime < timedelta(minutes = int(os.getenv('postlimit'))):
+            return sta.failure(f"請勿密集上傳，至少間隔{os.getenv('postlimit')}分鐘")
 
         val = ",".join(val)
         insert = f"INSERT INTO curriculum.{group} VALUES {val};"
@@ -456,16 +469,12 @@ class Curriculum(MethodResource):
             db.commit()
             cursor.close()
             db.close()
-            load_dotenv()
-            trigger = os.getenv("crawlertrigger")
-            data = {"group":f"{group}"}
-            token = {'Authorization': request.headers.get('Authorization')}
             cra = requests.post(trigger, json = data, headers = token)
             try:
                 crawler = cra.json()
             except:
                 crawler = cra.text
-            return redirect(url_for('curriculum',group = group,crawler = crawler))
+            return redirect(url_for('curriculum', group = group, crawler = crawler))
         except Exception as e:
             cursor.close()
             db.close()
