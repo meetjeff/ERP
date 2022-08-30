@@ -1,6 +1,6 @@
 # ERP system
 ### 直覺易用、智能分析、雙向互動的人力資源管理與潛在訂單追蹤系統，降低組織導入成本，高維度的數據分析，更有效率的洞見缺失與機會。
-##### Backend Developer | Architect  
+:technologist: Backend Developer | Architect  
 <br>
 
 ![學習資源](https://user-images.githubusercontent.com/106952571/187547220-8d31279e-ba19-41c0-973d-3aca117d401e.gif)
