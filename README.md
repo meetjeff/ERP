@@ -1,4 +1,11 @@
-# ERP API
+# ERP system
+### 直覺易用、智能分析、雙向互動的人力資源管理與潛在訂單追蹤系統，降低組織導入成本，高維度的數據分析，更有效率的洞見缺失與機會。
+##### Backend Developer | Architect
+## Landing Page
+:link: 人力資源管理 : http://hr.foresii.com  
+:link: 潛在訂單追蹤 : http://crm.foresii.com
+## Product Launch
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/ijWpAYtRWNg/0.jpg)](https://www.youtube.com/watch?v=ijWpAYtRWNg?t=5277 "Async HTTP APIs")
 
 ## /api_doc
 ###### -GET-
